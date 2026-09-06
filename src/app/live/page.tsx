@@ -1,4 +1,3 @@
-"use client";
 import LiveClient from "./live-client";
 import { Providers } from "../providers";
 
