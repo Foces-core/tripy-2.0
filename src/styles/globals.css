@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+@theme {
+  --color-maroon: #4a1420;
+  --color-maroon-dark: #330e17;
+  --color-cream: #f4e8c6;
+  --color-gold: #d8a84e;
+  --font-sans: Georgia, "Times New Roman", serif;
+}
+
+body {
+  font-family: Georgia, "Times New Roman", serif;
+}
