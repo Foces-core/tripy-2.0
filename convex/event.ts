@@ -19,7 +19,7 @@ export const seed = mutation({
     return await ctx.db.insert("state", {
       key: "event",
       live: false,
-      openDays: { 1: true, 2: false, 3: false },
+      openDays: { day1: true, day2: false, day3: false },
       scores: { cc1: 0, cc2: 0 },
       volunteerPw: "vol-877b7d",
       adminPw: "admin-bd7c6bfb",
@@ -52,7 +52,9 @@ export const setDay = mutation({
   handler: async (ctx, { day, open, pw }) => {
     const s = await ctx.db.query("state").withIndex("by_key", (q) => q.eq("key", "event")).first();
     if (!s || pw !== (s as any).adminPw) throw new Error("admin only");
-    await ctx.db.patch(s._id, { openDays: { ...(s as any).openDays, [day]: open } });
+    const cur = (s as any).openDays;
+    const key = day === 1 ? "day1" : day === 2 ? "day2" : "day3";
+    await ctx.db.patch(s._id, { openDays: { ...cur, [key]: open } });
   },
 });
 
