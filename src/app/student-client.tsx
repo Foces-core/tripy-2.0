@@ -1,18 +1,18 @@
 "use client";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useState } from "react";
-import { QUESTIONS } from "~/data/questions";
 
 const Standings = dynamic(() => import("./standings"), {
   ssr: false,
   loading: () => <p className="mb-4 py-4 text-center text-sm opacity-60">Loading standings…</p>,
 });
 
-type Day = 1 | 2 | 3;
+const DayGate = dynamic(() => import("./day-gate"), {
+  ssr: false,
+  loading: () => <p className="py-4 text-center text-sm opacity-60">Loading questions…</p>,
+});
 
 export default function StudentPage() {
-  const [day, setDay] = useState<Day>(1);
   return (
     <main className="mx-auto max-w-lg px-4 py-8">
       <Link
@@ -45,31 +45,7 @@ export default function StudentPage() {
           <li>Raise your hand. A volunteer verifies and scores CC1 / CC2.</li>
         </ol>
       </section>
-      <div className="mb-4 text-center">
-        {([1, 2, 3] as Day[]).map((d) => (
-          <button
-            key={d}
-            onClick={() => setDay(d)}
-            className={`mx-1 rounded-md border px-3 py-1 text-sm ${day === d ? "bg-[#f4e8c6] text-[#330e17]" : ""}`}
-          >
-            Day {d}
-          </button>
-        ))}
-      </div>
-      {QUESTIONS[day]!.map((q) => (
-        <div
-          key={q.label}
-          className="card mb-3 rounded-xl border border-[#d8a84e]/40 bg-[#4a1420] p-4"
-        >
-          <div className="flex items-center justify-between">
-            <span className="font-bold">{q.label}</span>
-            <span className="text-sm text-[#d8a84e]">
-              {q.pts} pts · {q.tier}
-            </span>
-          </div>
-          <p className="mt-2 text-sm">{q.statement}</p>
-        </div>
-      ))}
+      <DayGate />
       <footer className="mt-6 border-t border-[#f4e8c6]/10 pt-3 text-center text-[11px] tracking-widest opacity-60">
         FOCES · CEC — TRIPY 2.0
       </footer>
