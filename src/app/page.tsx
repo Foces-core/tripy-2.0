@@ -1,9 +1,19 @@
-import dynamic from "next/dynamic";
+"use client";
+import { useEffect, useState } from "react";
+import { Providers } from "./providers";
 
 export const dynamic = "force-dynamic";
 
-const HomeClient = dynamic(() => import("./home-client"), { ssr: false });
-
 export default function Page() {
-  return <HomeClient />;
+  const [mounted, setMounted] = useState(false);
+  const [HomeInner, setHomeInner] = useState<any>(null);
+  useEffect(() => {
+    setMounted(true);
+    import("./home-client").then((m) => setHomeInner(() => m.default));
+  }, []);
+  return (
+    <Providers>
+      {mounted && HomeInner ? <HomeInner /> : <p className="py-20 text-center opacity-70">Loading Tripy…</p>}
+    </Providers>
+  );
 }
