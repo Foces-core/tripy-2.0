@@ -1,1 +1,1 @@
-{ \"installCommand\": \"npm install --no-audit --no-fund\", \"buildCommand\": \"npx next build\", \"framework\": \"nextjs\" }
+{"installCommand": "npm install --no-audit --no-fund", "buildCommand": "npx next build", "framework": "nextjs"}
