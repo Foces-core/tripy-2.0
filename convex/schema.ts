@@ -3,7 +3,7 @@ import { v } from "convex/values";
 
 export const labValidator = v.union(v.literal("cc1"), v.literal("cc2"));
 export const dayValidator = v.union(v.literal(1), v.literal(2), v.literal(3));
-export const scoreValidator = v.union(v.literal(5), v.literal(10));
+export const scoreValidator = v.union(v.literal(1), v.literal(2), v.literal(4));
 export const openDaysValidator = v.object({
   day1: v.boolean(),
   day2: v.boolean(),

@@ -21,7 +21,7 @@ export default function Home() {
   const [adminTab, setAdminTab] = useState<"controls" | "live">("controls");
   const seeded = useRef(false);
   const [timedOut, setTimedOut] = useState(false);
-  const [pending, setPending] = useState<{ lab: Lab; pts: 5 | 10; q: string } | null>(null);
+  const [pending, setPending] = useState<{ lab: Lab; pts: 1 | 2 | 4; q: string } | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -112,7 +112,7 @@ export default function Home() {
       setActionError(error instanceof Error ? error.message : "Could not reset scores.");
     }
   };
-  const add = (lab: Lab, pts: 5 | 10, q: string) => {
+  const add = (lab: Lab, pts: 1 | 2 | 4, q: string) => {
     setPending({ lab, pts, q });
   };
   const confirmAdd = async () => {

@@ -37,17 +37,17 @@ describe("event scoring", () => {
     const t = await eventTest();
     await t.mutation(api.event.addScore, {
       lab: "cc1",
-      pts: 5,
+      pts: 1,
       question: "Q1",
       day: 1,
       pw: "volunteer-secret",
     });
-    await expect(t.query(api.event.get, {})).resolves.toMatchObject({ scores: { cc1: 5, cc2: 0 } });
+    await expect(t.query(api.event.get, {})).resolves.toMatchObject({ scores: { cc1: 1, cc2: 0 } });
   });
 
   test("refuses bad credentials and closed days without changing scores", async () => {
     const t = await eventTest();
-    const score = { lab: "cc2" as const, pts: 10 as const, question: "Q4", day: 2 as const };
+    const score = { lab: "cc2" as const, pts: 2 as const, question: "Q4", day: 2 as const };
     await expect(t.mutation(api.event.addScore, { ...score, pw: "wrong" })).rejects.toThrow();
     await expect(
       t.mutation(api.event.addScore, { ...score, pw: "admin-secret" }),
@@ -107,7 +107,7 @@ describe("event scoring", () => {
     const t = await eventTest();
     await t.mutation(api.event.addScore, {
       lab: "cc1",
-      pts: 5,
+      pts: 1,
       question: "Q1",
       day: 1,
       pw: "volunteer-secret",

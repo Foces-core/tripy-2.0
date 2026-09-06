@@ -1,7 +1,7 @@
 export type Question = {
   label: string;
-  pts: 5 | 10;
-  tier: "easy" | "medium";
+  pts: 1 | 2 | 4;
+  tier: "easy" | "medium" | "hard";
   statement: string;
   hint: string;
   solution: string;
@@ -13,7 +13,7 @@ export const QUESTIONS: Record<number, Question[]> = {
   1: [
     {
       label: "Q1 — Add two numbers",
-      pts: 5,
+      pts: 1,
       tier: "easy",
       statement: "Take two numbers as input and print their sum.",
       hint: "input() gives strings. Wrap with int().",
@@ -22,7 +22,7 @@ export const QUESTIONS: Record<number, Question[]> = {
     },
     {
       label: "Q2 — Even or odd",
-      pts: 5,
+      pts: 1,
       tier: "easy",
       statement: "Take a number and print even or odd.",
       hint: "n % 2 == 0 means even.",
@@ -31,7 +31,7 @@ export const QUESTIONS: Record<number, Question[]> = {
     },
     {
       label: "Q3 — Precedence check",
-      pts: 5,
+      pts: 1,
       tier: "easy",
       statement: "Take a, b, c. Print a + b * c. Tests operator precedence.",
       hint: "* runs before +. No brackets needed.",
@@ -40,7 +40,7 @@ export const QUESTIONS: Record<number, Question[]> = {
     },
     {
       label: "Q4 — Sign check",
-      pts: 10,
+      pts: 2,
       tier: "medium",
       statement: "Print positive, negative, or zero for input.",
       hint: "if / elif / else around 0.",
@@ -50,7 +50,7 @@ export const QUESTIONS: Record<number, Question[]> = {
     },
     {
       label: "Q5 — Menu calculator",
-      pts: 10,
+      pts: 2,
       tier: "medium",
       statement:
         "Menu: add, sub, mul, div. Take choice + two numbers, print result. Division by zero prints a message.",
@@ -63,7 +63,7 @@ export const QUESTIONS: Record<number, Question[]> = {
   2: [
     {
       label: "Q1 — Loop calculator",
-      pts: 5,
+      pts: 1,
       tier: "easy",
       statement: "Wrap yesterday's calculator in a loop so it keeps running until you quit.",
       hint: "Put a while True around the menu. The for + range version is only for repeat-N.",
@@ -73,7 +73,7 @@ export const QUESTIONS: Record<number, Question[]> = {
     },
     {
       label: "Q2 — Add exit",
-      pts: 5,
+      pts: 1,
       tier: "easy",
       statement: "Add an exit option. Typing exit quits the loop with break.",
       hint: "Check for exit first, then break out.",
@@ -83,7 +83,7 @@ export const QUESTIONS: Record<number, Question[]> = {
     },
     {
       label: "Q3 — Skip bad choice",
-      pts: 5,
+      pts: 1,
       tier: "easy",
       statement: "An unknown operation prints a message and jumps to the next round with continue.",
       hint: "Use an else branch with continue to skip the rest of the loop.",
@@ -93,7 +93,7 @@ export const QUESTIONS: Record<number, Question[]> = {
     },
     {
       label: "Q4 — Input validation",
-      pts: 10,
+      pts: 2,
       tier: "medium",
       statement: "Bad number input must not crash. Keep asking until the input is valid.",
       hint: "Wrap the read in try, catch ValueError, and continue.",
@@ -103,7 +103,7 @@ export const QUESTIONS: Record<number, Question[]> = {
     },
     {
       label: "Q5 — Division by 0 guard",
-      pts: 10,
+      pts: 2,
       tier: "medium",
       statement: "Dividing by 0 prints a message instead of crashing. Change only the div branch.",
       hint: "Add a nested check for b == 0 inside the div branch.",
@@ -115,7 +115,7 @@ export const QUESTIONS: Record<number, Question[]> = {
   3: [
     {
       label: "Q1 — Core: calculator functions",
-      pts: 5,
+      pts: 1,
       tier: "easy",
       statement:
         "Move each operation into its own function with return, then add one new op like % or **.",
@@ -126,7 +126,7 @@ export const QUESTIONS: Record<number, Question[]> = {
     },
     {
       label: "Q2 — Stretch: history list",
-      pts: 5,
+      pts: 1,
       tier: "easy",
       statement: "Keep every result in a list and print the full history on exit.",
       hint: "Start with history = [] and append each result.",
@@ -136,7 +136,7 @@ export const QUESTIONS: Record<number, Question[]> = {
     },
     {
       label: "Q3 — Advanced: dict dispatch",
-      pts: 10,
+      pts: 2,
       tier: "medium",
       statement: "Store the operations in a dict that maps names to functions.",
       hint: "Build ops = {'add': add}, then call ops[op](a, b).",
@@ -146,7 +146,7 @@ export const QUESTIONS: Record<number, Question[]> = {
     },
     {
       label: "Q4 — Bonus: math lib",
-      pts: 10,
+      pts: 2,
       tier: "medium",
       statement: "Add sqrt and pow to the dict using the math module.",
       hint: "Import math. Note sqrt takes one input while the rest take two.",
