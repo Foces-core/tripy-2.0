@@ -117,8 +117,24 @@ export default function Home() {
           <span className="text-[#d8a84e]">vs</span>
           <span className="rounded-full border border-[#f4e8c6]/30 px-3 py-0.5">CC2</span>
         </div>
-        <a href="https://forms.gle/H5dx4uyGZBLAX3ECA" target="_blank" rel="noreferrer" className="btn-gold mt-4 inline-block rounded-lg bg-[#d8a84e] px-6 py-2.5 font-bold text-[#330e17]">Register</a>
+        <a href="https://forms.gle/H5dx4uyGZBLAX3ECA" target="_blank" rel="noreferrer" className="hidden">Register</a>
       </header>
+      <section className="card mb-4 overflow-hidden rounded-xl border border-[#d8a84e]/30 bg-[#4a1420]">
+        <p className="pt-3 text-center text-[11px] font-bold tracking-[0.3em] text-[#d8a84e]">LIVE STANDINGS</p>
+        <div className="flex items-stretch justify-around px-4 pb-4 pt-2 text-center">
+          <div className="flex-1">
+            <p className="text-xs font-bold tracking-widest opacity-70">CC1</p>
+            <p className="text-5xl font-black text-[#f4e8c6]">{scores.cc1}</p>
+          </div>
+          <div className="flex flex-col items-center justify-center px-2">
+            <span className="rounded-full bg-[#d8a84e] px-2.5 py-0.5 text-xs font-black text-[#330e17]">VS</span>
+          </div>
+          <div className="flex-1">
+            <p className="text-xs font-bold tracking-widest opacity-70">CC2</p>
+            <p className="text-5xl font-black text-[#f4e8c6]">{scores.cc2}</p>
+          </div>
+        </div>
+      </section>
       <section className="card mb-4 rounded-xl border border-[#d8a84e]/30 bg-[#4a1420] p-4 text-sm leading-relaxed">
         <p className="font-bold tracking-wide text-[#d8a84e]">HOW IT RUNS</p>
         <ol className="mt-1 list-decimal space-y-0.5 pl-5 opacity-90">
