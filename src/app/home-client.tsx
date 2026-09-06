@@ -214,6 +214,7 @@ export default function Home() {
                   {q.label} <span className="font-normal text-[#d8a84e]">({q.pts})</span>
                 </p>
                 <p className="mt-1 text-xs opacity-80">{q.statement}</p>
+                <p className="mt-1 text-xs text-[#d8a84e]">Hint: {q.hint}</p>
                 <p className="text-xs opacity-60">Expected: {q.expected}</p>
                 <pre className="mt-1 overflow-x-auto rounded bg-black/40 p-2 text-xs">
                   {q.solution}
@@ -362,7 +363,6 @@ export default function Home() {
               </span>
             </div>
             <p className="mt-2 text-sm">{q.statement}</p>
-            <p className="mt-1 text-xs opacity-60">Hint: {q.hint}</p>
           </div>
         ))
       )}
