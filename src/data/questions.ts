@@ -32,5 +32,4 @@ export const QUESTIONS: Record<number, Question[]> = {
   ],
 };
 
-// Individual volunteer passwords. Change here.
-export const VOLUNTEERS = ["vol1", "vol2", "vol3", "coord1", "coord2", "mentor", "tripy"];
+// Passwords live in Convex (seeded). This export kept for docs only. Rotate after event.

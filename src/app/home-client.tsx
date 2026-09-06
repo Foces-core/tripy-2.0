@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { QUESTIONS } from "~/data/questions";
@@ -10,15 +10,17 @@ export default function Home() {
   const setLiveM = useMutation(api.event.setLive);
   const setDayM = useMutation(api.event.setDay);
   const addScoreM = useMutation(api.event.addScore);
-  const getRole = useQuery(api.event.checkRole, { pw: "__none__" });
+  const resetM = useMutation(api.event.resetScores);
 
   const [role, setRole] = useState<"admin" | "volunteer" | null>(null);
   const [pw, setPw] = useState("");
   const [day, setDay] = useState(1);
   const [adminTab, setAdminTab] = useState<"controls" | "live">("controls");
-  void getRole;
+  const seeded = useRef(false);
 
-  useEffect(() => { seed({}); }, [seed]);
+  useEffect(() => {
+    if (remote === null && !seeded.current) { seeded.current = true; seed({}); }
+  }, [remote, seed]);
 
   if (!remote) return <p className="py-20 text-center opacity-70">Loading Tripy…</p>;
 
@@ -45,9 +47,11 @@ export default function Home() {
     await setLiveM({ live: !live, pw });
   };
   const flipDay = async (d: number) => {
-    if (d !== day) setDay(d);
-    if (!isAdmin) return;
     await setDayM({ day: d, open: !(openDays as any)[d], pw });
+  };
+  const reset = async () => {
+    if (prompt("Type RESET to wipe both scores to 0:") !== "RESET") return;
+    await resetM({ pw });
   };
   const add = async (lab: "cc1" | "cc2", pts: number, q: string) => {
     if (!confirm(`Add ${pts} to ${lab.toUpperCase()} for ${q}?`)) return;
@@ -73,9 +77,13 @@ export default function Home() {
               <button disabled={!isAdmin} onClick={toggleLive} className="rounded bg-[#d8a84e] px-4 py-1 font-bold text-[#330e17] disabled:opacity-40">{live ? "Stop Day (admin)" : "Start Day (admin)"}</button>
             </div>
             {!isAdmin && <p className="mb-2 text-center text-xs opacity-60">Verify code, tap CC1/CC2. Only admin starts/stops.</p>}
-            <div className="mb-3 flex gap-2">{[1, 2, 3].map((d) => (
-              <button key={d} onClick={() => flipDay(d)} className={`rounded border border-[#d8a84e] px-3 py-1 text-sm ${(openDays as any)[d] ? "bg-[#d8a84e] text-[#330e17]" : "text-[#d8a84e]"}`}>{isAdmin ? ((openDays as any)[d] ? `Lock ${d}` : `Unlock ${d}`) : `Day ${d}`}</button>))}</div>
-            <div className="mb-3 text-center text-sm opacity-70">CC1: {scores.cc1} · CC2: {scores.cc2}</div>
+            <div className="mb-2 text-center">{[1, 2, 3].map((d) => (
+              <button key={d} onClick={() => setDay(d)} className={`mx-1 rounded-md border px-3 py-1 text-sm ${day === d ? "bg-[#f4e8c6] text-[#330e17]" : ""}`}>Day {d}</button>))}</div>
+            {isAdmin && (
+              <div className="mb-3 flex gap-2">{[1, 2, 3].map((d) => (
+                <button key={d} onClick={() => flipDay(d)} className={`rounded border border-[#d8a84e] px-3 py-1 text-sm ${(openDays as any)[d] ? "bg-[#d8a84e] text-[#330e17]" : "text-[#d8a84e]"}`}>{(openDays as any)[d] ? `Lock Day ${d}` : `Unlock Day ${d}`}</button>))}</div>
+            )}
+            <div className="mb-3 text-center text-sm opacity-70">CC1: {scores.cc1} · CC2: {scores.cc2} {isAdmin && (<button onClick={reset} className="ml-2 underline opacity-70">reset</button>)}</div>
             {QUESTIONS[day]!.map((q) => (
               <div key={q.label} className="mb-2 rounded-lg bg-[#4a1420] p-3">
                 <p className="text-sm font-bold">{q.label} <span className="font-normal text-[#d8a84e]">({q.pts})</span></p>
