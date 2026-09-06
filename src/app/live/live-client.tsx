@@ -322,7 +322,7 @@ export default function Home() {
         </p>
         <div className="flex items-stretch justify-around px-4 pt-2 pb-4 text-center">
           <div className="flex-1">
-            <p className="text-xs font-bold tracking-widest opacity-70">CC1</p>
+            <p className="text-base font-black tracking-widest opacity-90">CC1</p>
             <p className="text-5xl font-black text-[#f4e8c6]">{scores.cc1}</p>
           </div>
           <div className="flex flex-col items-center justify-center px-2">
@@ -331,7 +331,7 @@ export default function Home() {
             </span>
           </div>
           <div className="flex-1">
-            <p className="text-xs font-bold tracking-widest opacity-70">CC2</p>
+            <p className="text-base font-black tracking-widest opacity-90">CC2</p>
             <p className="text-5xl font-black text-[#f4e8c6]">{scores.cc2}</p>
           </div>
         </div>
@@ -361,8 +361,24 @@ export default function Home() {
           </button>
         </div>
       </form>
-      <footer className="mt-6 border-t border-[#f4e8c6]/10 pt-3 text-center text-[11px] tracking-widest opacity-60">
-        FOCES · CEC — TRIPY 2.0
+      <footer className="mt-6 flex items-center justify-center gap-4 border-t border-[#f4e8c6]/10 pt-3 text-xs tracking-widest">
+        <span className="opacity-60">FOCES · CEC</span>
+        <a
+          href="https://www.linkedin.com/company/foces-cec"
+          target="_blank"
+          rel="noreferrer"
+          className="text-[#d8a84e] underline opacity-80"
+        >
+          LinkedIn
+        </a>
+        <a
+          href="https://www.instagram.com/foces_cec"
+          target="_blank"
+          rel="noreferrer"
+          className="text-[#d8a84e] underline opacity-80"
+        >
+          Instagram
+        </a>
       </footer>
     </main>
   );

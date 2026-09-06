@@ -28,9 +28,7 @@ export default function StudentPage() {
           Tripy <span className="text-[#d8a84e]">2.0</span>
         </h1>
         <div className="mx-auto mt-3 h-px w-40 bg-[#d8a84e]/60" />
-        <p className="mt-3 text-lg">3-Day Python Workshop</p>
-        <p className="mt-1 text-sm font-bold tracking-wide text-[#d8a84e]">SEPT 7, 8, 9 · 4–5 PM</p>
-        <div className="mt-2 flex items-center justify-center gap-2 text-xs opacity-80">
+        <div className="mt-3 flex items-center justify-center gap-2 text-sm opacity-80">
           <span className="rounded-full border border-[#f4e8c6]/30 px-3 py-0.5">CC1</span>
           <span className="text-[#d8a84e]">vs</span>
           <span className="rounded-full border border-[#f4e8c6]/30 px-3 py-0.5">CC2</span>
@@ -38,7 +36,7 @@ export default function StudentPage() {
       </header>
       <Standings />
       <section className="card mb-4 rounded-xl border border-[#d8a84e]/30 bg-[#4a1420] p-4 text-sm leading-relaxed">
-        <p className="font-bold tracking-wide text-[#d8a84e]">HOW IT RUNS</p>
+        <p className="font-bold tracking-wide text-[#d8a84e]">HOW IT WORKS</p>
         <ol className="mt-1 list-decimal space-y-0.5 pl-5 opacity-90">
           <li>Read the question here.</li>
           <li>Write and run code on your laptop.</li>
@@ -46,8 +44,24 @@ export default function StudentPage() {
         </ol>
       </section>
       <DayGate />
-      <footer className="mt-6 border-t border-[#f4e8c6]/10 pt-3 text-center text-[11px] tracking-widest opacity-60">
-        FOCES · CEC — TRIPY 2.0
+      <footer className="mt-6 flex items-center justify-center gap-4 border-t border-[#f4e8c6]/10 pt-3 text-xs tracking-widest">
+        <span className="opacity-60">FOCES · CEC</span>
+        <a
+          href="https://www.linkedin.com/company/foces-cec"
+          target="_blank"
+          rel="noreferrer"
+          className="text-[#d8a84e] underline opacity-80"
+        >
+          LinkedIn
+        </a>
+        <a
+          href="https://www.instagram.com/foces_cec"
+          target="_blank"
+          rel="noreferrer"
+          className="text-[#d8a84e] underline opacity-80"
+        >
+          Instagram
+        </a>
       </footer>
     </main>
   );

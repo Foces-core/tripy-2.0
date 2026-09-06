@@ -9,7 +9,7 @@ function StandingsInner() {
   return (
     <div className="flex items-stretch justify-around px-4 pt-2 pb-4 text-center">
       <div className="flex-1">
-        <p className="text-xs font-bold tracking-widest opacity-70">CC1</p>
+        <p className="text-base font-black tracking-widest opacity-90">CC1</p>
         <p className="text-5xl font-black text-[#f4e8c6]">{remote.scores.cc1}</p>
       </div>
       <div className="flex flex-col items-center justify-center px-2">
@@ -18,7 +18,7 @@ function StandingsInner() {
         </span>
       </div>
       <div className="flex-1">
-        <p className="text-xs font-bold tracking-widest opacity-70">CC2</p>
+        <p className="text-base font-black tracking-widest opacity-90">CC2</p>
         <p className="text-5xl font-black text-[#f4e8c6]">{remote.scores.cc2}</p>
       </div>
     </div>
