@@ -17,12 +17,30 @@ export default function Home() {
   const [day, setDay] = useState(1);
   const [adminTab, setAdminTab] = useState<"controls" | "live">("controls");
   const seeded = useRef(false);
+  const [timedOut, setTimedOut] = useState(false);
+
+  useEffect(() => {
+    const t = setTimeout(() => setTimedOut(true), 12000);
+    return () => clearTimeout(t);
+  }, []);
 
   useEffect(() => {
     if (remote === null && !seeded.current) { seeded.current = true; seed({}); }
   }, [remote, seed]);
 
-  if (!remote) return <p className="py-20 text-center opacity-70">Loading Tripy…</p>;
+  if (!remote)
+    return (
+      <main className="mx-auto max-w-lg px-4 py-20 text-center">
+        <h1 className="text-4xl font-black">Tripy <span className="text-[#d8a84e]">2.0</span></h1>
+        {!timedOut ? <p className="mt-4 opacity-70">Loading live scores…</p> : (
+          <>
+            <p className="mt-4 font-bold">Cannot reach live server.</p>
+            <p className="mx-auto mt-2 max-w-sm text-sm opacity-80">Check internet. If AdGuard or lab firewall blocks it, allow this site and <span className="font-mono text-xs">*.convex.cloud</span>, then reload.</p>
+            <button onClick={() => location.reload()} className="btn-gold mt-4 rounded-lg bg-[#d8a84e] px-5 py-2 font-bold text-[#330e17]">Retry</button>
+          </>
+        )}
+      </main>
+    );
 
   const openDays: Record<number, boolean> = {
     1: (remote.openDays as any).day1,
@@ -117,7 +135,6 @@ export default function Home() {
           <span className="text-[#d8a84e]">vs</span>
           <span className="rounded-full border border-[#f4e8c6]/30 px-3 py-0.5">CC2</span>
         </div>
-        <a href="https://forms.gle/H5dx4uyGZBLAX3ECA" target="_blank" rel="noreferrer" className="hidden">Register</a>
       </header>
       <section className="card mb-4 overflow-hidden rounded-xl border border-[#d8a84e]/30 bg-[#4a1420]">
         <p className="pt-3 text-center text-[11px] font-bold tracking-[0.3em] text-[#d8a84e]">LIVE STANDINGS</p>
