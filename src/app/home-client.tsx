@@ -18,6 +18,7 @@ export default function Home() {
   const [adminTab, setAdminTab] = useState<"controls" | "live">("controls");
   const seeded = useRef(false);
   const [timedOut, setTimedOut] = useState(false);
+  const [pending, setPending] = useState<{ lab: "cc1" | "cc2"; pts: number; q: string } | null>(null);
 
   useEffect(() => {
     const t = setTimeout(() => setTimedOut(true), 12000);
@@ -71,9 +72,13 @@ export default function Home() {
     if (prompt("Type RESET to wipe both scores to 0:") !== "RESET") return;
     await resetM({ pw });
   };
-  const add = async (lab: "cc1" | "cc2", pts: number, q: string) => {
-    if (!confirm(`Add ${pts} to ${lab.toUpperCase()} for ${q}?`)) return;
-    await addScoreM({ lab, pts, question: q, by: pw.slice(0, 8), day, pw });
+  const add = (lab: "cc1" | "cc2", pts: number, q: string) => {
+    setPending({ lab, pts, q });
+  };
+  const confirmAdd = async () => {
+    if (!pending) return;
+    await addScoreM({ lab: pending.lab, pts: pending.pts, question: pending.q, by: pw.slice(0, 8), day, pw });
+    setPending(null);
   };
 
   if (role) {
@@ -117,6 +122,19 @@ export default function Home() {
           </>
         )}
         <button onClick={() => setRole(null)} className="mx-auto mt-4 block text-sm opacity-60">Exit</button>
+        {pending && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-6">
+            <div className="card w-full max-w-xs rounded-2xl border border-[#d8a84e]/40 bg-[#4a1420] p-6 text-center">
+              <p className="text-lg font-black">Confirm score?</p>
+              <p className="mt-2 text-sm opacity-90">Add <span className="font-black text-[#d8a84e]">{pending.pts} pts</span> to <span className="font-black">{pending.lab.toUpperCase()}</span></p>
+              <p className="mt-1 text-xs opacity-60">{pending.q} · Day {day}</p>
+              <div className="mt-5 flex gap-3">
+                <button onClick={() => setPending(null)} className="flex-1 rounded-lg bg-red-600 px-4 py-2.5 font-black text-white">No</button>
+                <button onClick={confirmAdd} className="flex-1 rounded-lg bg-green-600 px-4 py-2.5 font-black text-white">Yes</button>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
     );
   }
