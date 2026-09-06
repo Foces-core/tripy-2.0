@@ -132,7 +132,7 @@ export default function Home() {
         <h1 className="text-center text-3xl font-bold text-[#d8a84e]">
           Tripy 2.0 — {isAdmin ? "Admin" : "Volunteer"}
         </h1>
-        <p className="mb-4 text-center text-sm opacity-70">Day {day} · live shared DB</p>
+        <p className="mb-4 text-center text-sm opacity-70">Day {day} · scores update live</p>
         {actionError && (
           <p
             role="alert"
@@ -300,7 +300,7 @@ export default function Home() {
       <section className="card mb-4 overflow-hidden rounded-xl border border-[#d8a84e]/30 bg-[#4a1420]">
         <p className="pt-3 text-center text-[11px] font-bold tracking-[0.3em] text-[#d8a84e]">
           LIVE STANDINGS
-        </p>
+        </p>{" "}
         <div className="flex items-stretch justify-around px-4 pt-2 pb-4 text-center">
           <div className="flex-1">
             <p className="text-xs font-bold tracking-widest opacity-70">CC1</p>
@@ -341,7 +341,7 @@ export default function Home() {
         <div className="card rounded-xl border border-[#d8a84e]/30 bg-[#4a1420] p-8 text-center">
           <p className="text-3xl">🔒</p>
           <p className="mt-2 font-bold">Day {day} is locked</p>
-          <p className="mt-1 text-sm opacity-70">Time over or not started yet. Hang tight.</p>
+          <p className="mt-1 text-sm opacity-70">It opens when the mentor starts it.</p>
         </div>
       ) : !live ? (
         <div className="card rounded-xl border border-[#d8a84e]/30 bg-[#4a1420] p-8 text-center">

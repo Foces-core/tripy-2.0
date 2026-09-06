@@ -65,9 +65,8 @@ export const QUESTIONS: Record<number, Question[]> = {
       label: "Q1 — Loop calculator",
       pts: 5,
       tier: "easy",
-      statement:
-        "Wrap yesterday's calculator in a loop so it keeps running. Use while + for/range where it fits.",
-      hint: "Hint 1: while True around menu. Hint 2: for + range only for repeat-N variant.",
+      statement: "Wrap yesterday's calculator in a loop so it keeps running until you quit.",
+      hint: "Put a while True around the menu. The for + range version is only for repeat-N.",
       solution:
         "while True:\n    op = input('op (add/sub/mul/div): ').strip().lower()\n    a = float(input('a: '))\n    b = float(input('b: '))\n    if op == 'add': print(a + b)\n    elif op == 'sub': print(a - b)\n    elif op == 'mul': print(a * b)\n    elif op == 'div': print(a / b)",
       expected: "runs twice in a row without restart",
@@ -76,8 +75,8 @@ export const QUESTIONS: Record<number, Question[]> = {
       label: "Q2 — Add exit",
       pts: 5,
       tier: "easy",
-      statement: "Add exit option. Typing exit quits loop via break. Must-have win condition.",
-      hint: "Hint 1: check op == 'exit' first. Hint 2: break.",
+      statement: "Add an exit option. Typing exit quits the loop with break.",
+      hint: "Check for exit first, then break out.",
       solution:
         "while True:\n    op = input('op or exit: ').strip().lower()\n    if op == 'exit':\n        print('bye')\n        break\n    a = float(input('a: '))\n    b = float(input('b: '))\n    if op == 'add': print(a + b)\n    elif op == 'sub': print(a - b)\n    elif op == 'mul': print(a * b)\n    elif op == 'div': print(a / b)",
       expected: "in: exit → out: bye, quits",
@@ -86,9 +85,8 @@ export const QUESTIONS: Record<number, Question[]> = {
       label: "Q3 — Skip bad choice",
       pts: 5,
       tier: "easy",
-      statement:
-        "Unknown operation prints message and skips to next round with continue. Nested condition practice.",
-      hint: "Hint 1: else branch. Hint 2: continue skips rest of loop.",
+      statement: "An unknown operation prints a message and jumps to the next round with continue.",
+      hint: "Use an else branch with continue to skip the rest of the loop.",
       solution:
         "while True:\n    op = input('op or exit: ').strip().lower()\n    if op == 'exit':\n        break\n    if op not in ('add', 'sub', 'mul', 'div'):\n        print('unknown op')\n        continue\n    a = float(input('a: '))\n    b = float(input('b: '))\n    if op == 'add': print(a + b)\n    elif op == 'sub': print(a - b)\n    elif op == 'mul': print(a * b)\n    else: print(a / b)",
       expected: "in: xyz → out: unknown op, loops again",
@@ -97,8 +95,8 @@ export const QUESTIONS: Record<number, Question[]> = {
       label: "Q4 — Input validation",
       pts: 10,
       tier: "medium",
-      statement: "Optional. Numbers must not crash on bad input. Keep asking until valid.",
-      hint: "Hint 1: try int/float. Hint 2: except ValueError + continue.",
+      statement: "Bad number input must not crash. Keep asking until the input is valid.",
+      hint: "Wrap the read in try, catch ValueError, and continue.",
       solution:
         "def num(prompt):\n    while True:\n        try:\n            return float(input(prompt))\n        except ValueError:\n            print('not a number, try again')\nwhile True:\n    op = input('op or exit: ').strip().lower()\n    if op == 'exit': break\n    a = num('a: ')\n    b = num('b: ')\n    print(a + b if op == 'add' else 'todo')",
       expected: "in: abc → out: not a number, asks again",
@@ -107,9 +105,8 @@ export const QUESTIONS: Record<number, Question[]> = {
       label: "Q5 — Division by 0 guard",
       pts: 10,
       tier: "medium",
-      statement:
-        "Optional. Dividing by 0 prints message, no crash. Demo: 1 good run + 1 bad input case.",
-      hint: "Hint 1: nested if on b == 0. Hint 2: minimal fix, touch div branch only.",
+      statement: "Dividing by 0 prints a message instead of crashing. Change only the div branch.",
+      hint: "Add a nested check for b == 0 inside the div branch.",
       solution:
         "while True:\n    op = input('op or exit: ').strip().lower()\n    if op == 'exit': break\n    a = float(input('a: '))\n    b = float(input('b: '))\n    if op == 'div':\n        if b == 0:\n            print('cannot divide by zero')\n        else:\n            print(a / b)\n    elif op == 'add': print(a + b)\n    elif op == 'sub': print(a - b)\n    elif op == 'mul': print(a * b)",
       expected: "in: div 5 0 → out: cannot divide by zero",
@@ -121,8 +118,8 @@ export const QUESTIONS: Record<number, Question[]> = {
       pts: 5,
       tier: "easy",
       statement:
-        "Core. Move each op into function with return. Minimum viable day: functions + 1 new op (eg % or **).",
-      hint: "Hint 1: def add(a, b): return a + b. Hint 2: call it from menu.",
+        "Move each operation into its own function with return, then add one new op like % or **.",
+      hint: "Write def add(a, b): return a + b, then call it from the menu.",
       solution:
         "def add(a, b): return a + b\ndef sub(a, b): return a - b\ndef mul(a, b): return a * b\ndef div(a, b): return a / b\ndef mod(a, b): return a % b\nop = input('op: ').strip()\na = float(input('a: '))\nb = float(input('b: '))\nif op == 'add': print(add(a, b))\nelif op == 'mod': print(mod(a, b))",
       expected: "in: mod 7 3 → out: 1.0",
@@ -131,9 +128,8 @@ export const QUESTIONS: Record<number, Question[]> = {
       label: "Q2 — Stretch: history list",
       pts: 5,
       tier: "easy",
-      statement:
-        "Stretch. Keep every result in a list. Print history on exit. Tuples/sets revision: history stays list.",
-      hint: "Hint 1: history = []. Hint 2: .append(result).",
+      statement: "Keep every result in a list and print the full history on exit.",
+      hint: "Start with history = [] and append each result.",
       solution:
         "history = []\nwhile True:\n    op = input('op or exit: ').strip()\n    if op == 'exit': break\n    r = float(input('a: ')) + float(input('b: '))\n    history.append(r)\n    print(r)\nprint(history)",
       expected: "exit prints eg [7.0, 3.0]",
@@ -142,8 +138,8 @@ export const QUESTIONS: Record<number, Question[]> = {
       label: "Q3 — Advanced: dict dispatch",
       pts: 10,
       tier: "medium",
-      statement: "Advanced. Map names to functions with dict. Demo needs modular + extensible.",
-      hint: "Hint 1: ops = {'add': add}. Hint 2: ops[op](a, b).",
+      statement: "Store the operations in a dict that maps names to functions.",
+      hint: "Build ops = {'add': add}, then call ops[op](a, b).",
       solution:
         "def add(a, b): return a + b\ndef sub(a, b): return a - b\nops = {'add': add, 'sub': sub}\nop = input('op: ').strip()\nprint(ops[op](float(input('a: ')), float(input('b: '))))",
       expected: "in: add 2 3 → out: 5.0",
@@ -152,8 +148,8 @@ export const QUESTIONS: Record<number, Question[]> = {
       label: "Q4 — Bonus: math lib",
       pts: 10,
       tier: "medium",
-      statement: "Optional. Add sqrt and pow via math module as new dict entries.",
-      hint: "Hint 1: import math. Hint 2: one-arg vs two-arg needs branch.",
+      statement: "Add sqrt and pow to the dict using the math module.",
+      hint: "Import math. Note sqrt takes one input while the rest take two.",
       solution:
         "import math\ndef add(a, b): return a + b\nops = {'add': add, 'pow': lambda a, b: math.pow(a, b), 'sqrt': lambda a, b: math.sqrt(a)}\nop = input('op: ').strip()\na = float(input('a: '))\nb = float(input('b: ')) if op == 'pow' else 0\nprint(ops[op](a, b))",
       expected: "in: sqrt 9 → out: 3.0",
