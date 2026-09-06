@@ -8,6 +8,132 @@ import { ANSWERS } from "~/data/answers";
 
 type Day = 1 | 2 | 3;
 type Lab = "cc1" | "cc2";
+type Scores = { cc1: number; cc2: number };
+
+function LoggedOutView({
+  scores,
+  timedOut,
+  actionError,
+  pwInput,
+  onPwInput,
+  onLogin,
+}: {
+  scores: Scores | null;
+  timedOut: boolean;
+  actionError: string | null;
+  pwInput: string;
+  onPwInput: (v: string) => void;
+  onLogin: (e: React.FormEvent) => void;
+}) {
+  return (
+    <main className="mx-auto max-w-lg px-4 py-8">
+      <Link
+        href="/"
+        prefetch={false}
+        className="fixed top-3 left-4 rounded-2xl border border-[#d8a84e] px-4 py-1 text-xs text-[#d8a84e] opacity-70"
+      >
+        ← Questions
+      </Link>
+      <header className="mb-5 text-center">
+        <p className="text-[11px] font-bold tracking-[0.35em] text-[#d8a84e]">FOCES · CEC</p>
+        <h1 className="mt-1 text-4xl leading-none font-black tracking-tight">
+          Tripy <span className="text-[#d8a84e]">2.0</span> Live
+        </h1>
+      </header>
+      {actionError && (
+        <p
+          role="alert"
+          className="mb-3 rounded-lg border border-red-400/60 bg-red-950/50 p-2 text-center text-sm"
+        >
+          {actionError}
+        </p>
+      )}
+      <section className="card mb-4 overflow-hidden rounded-xl border border-[#d8a84e]/30 bg-[#4a1420]">
+        <p className="pt-3 text-center text-[11px] font-bold tracking-[0.3em] text-[#d8a84e]">
+          LIVE STANDINGS
+        </p>
+        {scores ? (
+          <div className="flex items-stretch justify-around px-4 pt-2 pb-4 text-center">
+            <div className="flex-1">
+              <p className="text-base font-black tracking-widest opacity-90">CC1</p>
+              <p className="text-5xl font-black text-[#f4e8c6]">{scores.cc1}</p>
+            </div>
+            <div className="flex flex-col items-center justify-center px-2">
+              <span className="rounded-full bg-[#d8a84e] px-2.5 py-0.5 text-xs font-black text-[#330e17]">
+                VS
+              </span>
+            </div>
+            <div className="flex-1">
+              <p className="text-base font-black tracking-widest opacity-90">CC2</p>
+              <p className="text-5xl font-black text-[#f4e8c6]">{scores.cc2}</p>
+            </div>
+          </div>
+        ) : (
+          <p className="py-4 text-center text-sm opacity-60">Loading live scores…</p>
+        )}
+      </section>
+      {timedOut && !scores && (
+        <div className="card mb-4 rounded-xl border border-[#d8a84e]/30 bg-[#4a1420] p-4 text-center">
+          <p className="font-bold">Cannot reach live server.</p>
+          <p className="mx-auto mt-2 max-w-sm text-sm opacity-80">
+            Check internet. If AdGuard or lab firewall blocks it, allow this site and{" "}
+            <span className="font-mono text-xs">*.convex.cloud</span>, then reload.
+          </p>
+          <button
+            onClick={() => location.reload()}
+            className="btn-gold mt-4 rounded-lg bg-[#d8a84e] px-5 py-2 font-bold text-[#330e17]"
+          >
+            Retry
+          </button>
+        </div>
+      )}
+      <form
+        onSubmit={onLogin}
+        className="card rounded-xl border border-[#d8a84e]/30 bg-[#4a1420] p-4"
+      >
+        <label htmlFor="live-password" className="text-sm font-bold text-[#d8a84e]">
+          Volunteer / Admin login
+        </label>
+        <div className="mt-2 flex gap-2">
+          <input
+            id="live-password"
+            type="password"
+            value={pwInput}
+            onChange={(e) => onPwInput(e.target.value)}
+            placeholder="Password"
+            autoComplete="current-password"
+            className="min-w-0 flex-1 rounded-lg border border-[#d8a84e]/40 bg-black/40 px-3 py-2 text-sm text-[#f4e8c6] placeholder:opacity-40"
+          />
+          <button
+            type="submit"
+            className="rounded-lg bg-[#d8a84e] px-4 py-2 text-sm font-bold text-[#330e17]"
+          >
+            Enter
+          </button>
+        </div>
+      </form>
+      <footer className="mt-6 flex items-center justify-center gap-4 border-t border-[#f4e8c6]/10 pt-3 text-xs tracking-widest">
+        <span className="opacity-60">FOCES · CEC</span>
+        <a
+          href="https://www.linkedin.com/company/foces-cec"
+          target="_blank"
+          rel="noreferrer"
+          className="text-[#d8a84e] underline opacity-80"
+        >
+          LinkedIn
+        </a>
+        <a
+          href="https://www.instagram.com/foces_cec"
+          target="_blank"
+          rel="noreferrer"
+          className="text-[#d8a84e] underline opacity-80"
+        >
+          Instagram
+        </a>
+      </footer>
+    </main>
+  );
+}
 
 export default function Home() {
   const remote = useQuery(api.event.get);
@@ -40,40 +166,6 @@ export default function Home() {
     }
   }, [remote, seed]);
 
-  if (!remote)
-    return (
-      <main className="mx-auto max-w-lg px-4 py-20 text-center">
-        <h1 className="text-4xl font-black">
-          Tripy <span className="text-[#d8a84e]">2.0</span>
-        </h1>
-        {!timedOut ? (
-          <p className="mt-4 opacity-70">Loading live scores…</p>
-        ) : (
-          <>
-            <p className="mt-4 font-bold">Cannot reach live server.</p>
-            <p className="mx-auto mt-2 max-w-sm text-sm opacity-80">
-              Check internet. If AdGuard or lab firewall blocks it, allow this site and{" "}
-              <span className="font-mono text-xs">*.convex.cloud</span>, then reload.
-            </p>
-            <button
-              onClick={() => location.reload()}
-              className="btn-gold mt-4 rounded-lg bg-[#d8a84e] px-5 py-2 font-bold text-[#330e17]"
-            >
-              Retry
-            </button>
-          </>
-        )}
-      </main>
-    );
-
-  const openDays: Record<Day, boolean> = {
-    1: remote.openDays.day1,
-    2: remote.openDays.day2,
-    3: remote.openDays.day3,
-  };
-  const { live, scores } = remote;
-  const isAdmin = role === "admin";
-
   const login = async (e: React.FormEvent) => {
     e.preventDefault();
     const input = pwInput.trim();
@@ -94,6 +186,33 @@ export default function Home() {
       setActionError("Could not verify access. Check your connection and try again.");
     }
   };
+
+  if (!remote) {
+    if (role)
+      return (
+        <main className="mx-auto max-w-lg px-4 py-20 text-center">
+          <p className="mt-4 opacity-70">Reconnecting…</p>
+        </main>
+      );
+    return (
+      <LoggedOutView
+        scores={null}
+        timedOut={timedOut}
+        actionError={actionError}
+        pwInput={pwInput}
+        onPwInput={setPwInput}
+        onLogin={login}
+      />
+    );
+  }
+
+  const openDays: Record<Day, boolean> = {
+    1: remote.openDays.day1,
+    2: remote.openDays.day2,
+    3: remote.openDays.day3,
+  };
+  const { live, scores } = remote;
+  const isAdmin = role === "admin";
 
   const toggleLive = async () => {
     if (!isAdmin) return;
@@ -294,92 +413,13 @@ export default function Home() {
   }
 
   return (
-    <main className="mx-auto max-w-lg px-4 py-8">
-      <Link
-        href="/"
-        prefetch={false}
-        className="fixed top-3 left-4 rounded-2xl border border-[#d8a84e] px-4 py-1 text-xs text-[#d8a84e] opacity-70"
-      >
-        ← Questions
-      </Link>
-      <header className="mb-5 text-center">
-        <p className="text-[11px] font-bold tracking-[0.35em] text-[#d8a84e]">FOCES · CEC</p>
-        <h1 className="mt-1 text-4xl leading-none font-black tracking-tight">
-          Tripy <span className="text-[#d8a84e]">2.0</span> Live
-        </h1>
-      </header>
-      {actionError && (
-        <p
-          role="alert"
-          className="mb-3 rounded-lg border border-red-400/60 bg-red-950/50 p-2 text-center text-sm"
-        >
-          {actionError}
-        </p>
-      )}
-      <section className="card mb-4 overflow-hidden rounded-xl border border-[#d8a84e]/30 bg-[#4a1420]">
-        <p className="pt-3 text-center text-[11px] font-bold tracking-[0.3em] text-[#d8a84e]">
-          LIVE STANDINGS
-        </p>
-        <div className="flex items-stretch justify-around px-4 pt-2 pb-4 text-center">
-          <div className="flex-1">
-            <p className="text-base font-black tracking-widest opacity-90">CC1</p>
-            <p className="text-5xl font-black text-[#f4e8c6]">{scores.cc1}</p>
-          </div>
-          <div className="flex flex-col items-center justify-center px-2">
-            <span className="rounded-full bg-[#d8a84e] px-2.5 py-0.5 text-xs font-black text-[#330e17]">
-              VS
-            </span>
-          </div>
-          <div className="flex-1">
-            <p className="text-base font-black tracking-widest opacity-90">CC2</p>
-            <p className="text-5xl font-black text-[#f4e8c6]">{scores.cc2}</p>
-          </div>
-        </div>
-      </section>
-      <form
-        onSubmit={login}
-        className="card rounded-xl border border-[#d8a84e]/30 bg-[#4a1420] p-4"
-      >
-        <label htmlFor="live-password" className="text-sm font-bold text-[#d8a84e]">
-          Volunteer / Admin login
-        </label>
-        <div className="mt-2 flex gap-2">
-          <input
-            id="live-password"
-            type="password"
-            value={pwInput}
-            onChange={(e) => setPwInput(e.target.value)}
-            placeholder="Password"
-            autoComplete="current-password"
-            className="min-w-0 flex-1 rounded-lg border border-[#d8a84e]/40 bg-black/40 px-3 py-2 text-sm text-[#f4e8c6] placeholder:opacity-40"
-          />
-          <button
-            type="submit"
-            className="rounded-lg bg-[#d8a84e] px-4 py-2 text-sm font-bold text-[#330e17]"
-          >
-            Enter
-          </button>
-        </div>
-      </form>
-      <footer className="mt-6 flex items-center justify-center gap-4 border-t border-[#f4e8c6]/10 pt-3 text-xs tracking-widest">
-        <span className="opacity-60">FOCES · CEC</span>
-        <a
-          href="https://www.linkedin.com/company/foces-cec"
-          target="_blank"
-          rel="noreferrer"
-          className="text-[#d8a84e] underline opacity-80"
-        >
-          LinkedIn
-        </a>
-        <a
-          href="https://www.instagram.com/foces_cec"
-          target="_blank"
-          rel="noreferrer"
-          className="text-[#d8a84e] underline opacity-80"
-        >
-          Instagram
-        </a>
-      </footer>
-    </main>
+    <LoggedOutView
+      scores={scores}
+      timedOut={timedOut}
+      actionError={actionError}
+      pwInput={pwInput}
+      onPwInput={setPwInput}
+      onLogin={login}
+    />
   );
 }
