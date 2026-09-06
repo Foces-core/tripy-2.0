@@ -1,8 +1,10 @@
 "use client";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery } from "convex/react";
-import { api } from "../../convex/_generated/api";
+import { api } from "../../../convex/_generated/api";
 import { QUESTIONS } from "~/data/questions";
+import { ANSWERS } from "~/data/answers";
 
 type Day = 1 | 2 | 3;
 type Lab = "cc1" | "cc2";
@@ -17,12 +19,14 @@ export default function Home() {
 
   const [role, setRole] = useState<"admin" | "volunteer" | null>(null);
   const [pw, setPw] = useState("");
+  const [pwInput, setPwInput] = useState("");
   const [day, setDay] = useState<Day>(1);
   const [adminTab, setAdminTab] = useState<"controls" | "live">("controls");
   const seeded = useRef(false);
   const [timedOut, setTimedOut] = useState(false);
   const [pending, setPending] = useState<{ lab: Lab; pts: 1 | 2 | 4; q: string } | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+  const [confirmReset, setConfirmReset] = useState(false);
 
   useEffect(() => {
     const t = setTimeout(() => setTimedOut(true), 12000);
@@ -70,19 +74,21 @@ export default function Home() {
   const { live, scores } = remote;
   const isAdmin = role === "admin";
 
-  const login = async () => {
-    const input = prompt("Password (volunteer or admin):");
+  const login = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const input = pwInput.trim();
     if (!input) return;
     try {
       const { ConvexClient } = await import("convex/browser");
       const client = new ConvexClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
-      const result = await client.query(api.event.checkRole, { pw: input.trim() });
+      const result = await client.query(api.event.checkRole, { pw: input });
       client.close();
       if (result === "admin" || result === "volunteer") {
         setRole(result);
-        setPw(input.trim());
+        setPw(input);
+        setPwInput("");
       } else {
-        alert("Wrong password.");
+        setActionError("Wrong password.");
       }
     } catch {
       setActionError("Could not verify access. Check your connection and try again.");
@@ -90,7 +96,7 @@ export default function Home() {
   };
 
   const toggleLive = async () => {
-    if (!isAdmin) return alert("Admin only.");
+    if (!isAdmin) return;
     try {
       await setLiveM({ live: !live, pw });
     } catch (error) {
@@ -105,7 +111,11 @@ export default function Home() {
     }
   };
   const reset = async () => {
-    if (prompt("Type RESET to wipe both scores to 0:") !== "RESET") return;
+    if (!confirmReset) {
+      setConfirmReset(true);
+      return;
+    }
+    setConfirmReset(false);
     try {
       await resetM({ pw });
     } catch (error) {
@@ -129,6 +139,13 @@ export default function Home() {
   if (role) {
     return (
       <main className="mx-auto max-w-lg px-4 py-8">
+        <Link
+          href="/"
+          prefetch={false}
+          className="fixed top-3 left-4 rounded-2xl border border-[#d8a84e] px-4 py-1 text-xs text-[#d8a84e] opacity-70"
+        >
+          ← Questions
+        </Link>
         <h1 className="text-center text-3xl font-bold text-[#d8a84e]">
           Tripy 2.0 — {isAdmin ? "Admin" : "Volunteer"}
         </h1>
@@ -204,7 +221,7 @@ export default function Home() {
               CC1: {scores.cc1} · CC2: {scores.cc2}{" "}
               {isAdmin && (
                 <button onClick={reset} className="ml-2 underline opacity-70">
-                  reset
+                  {confirmReset ? "tap again to wipe scores" : "reset"}
                 </button>
               )}
             </div>
@@ -214,10 +231,10 @@ export default function Home() {
                   {q.label} <span className="font-normal text-[#d8a84e]">({q.pts})</span>
                 </p>
                 <p className="mt-1 text-xs opacity-80">{q.statement}</p>
-                <p className="mt-1 text-xs text-[#d8a84e]">Hint: {q.hint}</p>
-                <p className="text-xs opacity-60">Expected: {q.expected}</p>
+                <p className="mt-1 text-xs text-[#d8a84e]">Hint: {ANSWERS[day]![q.label]!.hint}</p>
+                <p className="text-xs opacity-60">Expected: {ANSWERS[day]![q.label]!.expected}</p>
                 <pre className="mt-1 overflow-x-auto rounded bg-black/40 p-2 text-xs">
-                  {q.solution}
+                  {ANSWERS[day]![q.label]!.solution}
                 </pre>
                 <div className="mt-2 flex gap-2">
                   {(["cc1", "cc2"] as const).map((lab) => (
@@ -278,30 +295,31 @@ export default function Home() {
 
   return (
     <main className="mx-auto max-w-lg px-4 py-8">
-      <button
-        onClick={login}
-        className="fixed top-3 right-4 rounded-2xl border border-[#d8a84e] px-4 py-1 text-xs text-[#d8a84e] opacity-70"
+      <Link
+        href="/"
+        prefetch={false}
+        className="fixed top-3 left-4 rounded-2xl border border-[#d8a84e] px-4 py-1 text-xs text-[#d8a84e] opacity-70"
       >
-        Volunteer
-      </button>
+        ← Questions
+      </Link>
       <header className="mb-5 text-center">
         <p className="text-[11px] font-bold tracking-[0.35em] text-[#d8a84e]">FOCES · CEC</p>
-        <h1 className="mt-1 text-6xl leading-none font-black tracking-tight">
-          Tripy <span className="text-[#d8a84e]">2.0</span>
+        <h1 className="mt-1 text-4xl leading-none font-black tracking-tight">
+          Tripy <span className="text-[#d8a84e]">2.0</span> Live
         </h1>
-        <div className="mx-auto mt-3 h-px w-40 bg-[#d8a84e]/60" />
-        <p className="mt-3 text-lg">3-Day Python Workshop</p>
-        <p className="mt-1 text-sm font-bold tracking-wide text-[#d8a84e]">SEPT 7, 8, 9 · 4–5 PM</p>
-        <div className="mt-2 flex items-center justify-center gap-2 text-xs opacity-80">
-          <span className="rounded-full border border-[#f4e8c6]/30 px-3 py-0.5">CC1</span>
-          <span className="text-[#d8a84e]">vs</span>
-          <span className="rounded-full border border-[#f4e8c6]/30 px-3 py-0.5">CC2</span>
-        </div>
       </header>
+      {actionError && (
+        <p
+          role="alert"
+          className="mb-3 rounded-lg border border-red-400/60 bg-red-950/50 p-2 text-center text-sm"
+        >
+          {actionError}
+        </p>
+      )}
       <section className="card mb-4 overflow-hidden rounded-xl border border-[#d8a84e]/30 bg-[#4a1420]">
         <p className="pt-3 text-center text-[11px] font-bold tracking-[0.3em] text-[#d8a84e]">
           LIVE STANDINGS
-        </p>{" "}
+        </p>
         <div className="flex items-stretch justify-around px-4 pt-2 pb-4 text-center">
           <div className="flex-1">
             <p className="text-xs font-bold tracking-widest opacity-70">CC1</p>
@@ -318,57 +336,31 @@ export default function Home() {
           </div>
         </div>
       </section>
-      <section className="card mb-4 rounded-xl border border-[#d8a84e]/30 bg-[#4a1420] p-4 text-sm leading-relaxed">
-        <p className="font-bold tracking-wide text-[#d8a84e]">HOW IT RUNS</p>
-        <ol className="mt-1 list-decimal space-y-0.5 pl-5 opacity-90">
-          <li>Read the question here.</li>
-          <li>Write and run code on your laptop.</li>
-          <li>Raise your hand. A volunteer verifies and scores CC1 / CC2.</li>
-        </ol>
-      </section>
-      <div className="mb-4 text-center">
-        {([1, 2, 3] as Day[]).map((d) => (
+      <form
+        onSubmit={login}
+        className="card rounded-xl border border-[#d8a84e]/30 bg-[#4a1420] p-4"
+      >
+        <label htmlFor="live-password" className="text-sm font-bold text-[#d8a84e]">
+          Volunteer / Admin login
+        </label>
+        <div className="mt-2 flex gap-2">
+          <input
+            id="live-password"
+            type="password"
+            value={pwInput}
+            onChange={(e) => setPwInput(e.target.value)}
+            placeholder="Password"
+            autoComplete="current-password"
+            className="min-w-0 flex-1 rounded-lg border border-[#d8a84e]/40 bg-black/40 px-3 py-2 text-sm text-[#f4e8c6] placeholder:opacity-40"
+          />
           <button
-            key={d}
-            disabled={!openDays[d]}
-            onClick={() => setDay(d)}
-            className={`mx-1 rounded-md border px-3 py-1 ${day === d ? "bg-[#f4e8c6] text-[#330e17]" : ""} disabled:opacity-30`}
+            type="submit"
+            className="rounded-lg bg-[#d8a84e] px-4 py-2 text-sm font-bold text-[#330e17]"
           >
-            Day {d}
+            Enter
           </button>
-        ))}
-      </div>
-      {!openDays[day] ? (
-        <div className="card rounded-xl border border-[#d8a84e]/30 bg-[#4a1420] p-8 text-center">
-          <p className="text-3xl">🔒</p>
-          <p className="mt-2 font-bold">Day {day} is locked</p>
-          <p className="mt-1 text-sm opacity-70">It opens when the mentor starts it.</p>
         </div>
-      ) : !live ? (
-        <div className="card rounded-xl border border-[#d8a84e]/30 bg-[#4a1420] p-8 text-center">
-          <p className="text-3xl">⏸</p>
-          <p className="mt-2 font-bold">Paused</p>
-          <p className="mt-1 text-sm opacity-70">Wait for the go-ahead from your mentor.</p>
-        </div>
-      ) : (
-        QUESTIONS[day]!.map((q) => (
-          <div
-            key={q.label}
-            className="card mb-3 rounded-xl border border-[#d8a84e]/40 bg-[#4a1420] p-4"
-          >
-            <div className="flex items-center justify-between">
-              <span className="font-bold">{q.label}</span>
-              <span className="text-sm text-[#d8a84e]">
-                {q.pts} pts · {q.tier}
-              </span>
-            </div>
-            <p className="mt-2 text-sm">{q.statement}</p>
-          </div>
-        ))
-      )}
-      <p className="mt-4 text-center text-xs opacity-60">
-        CC1 {scores.cc1} · CC2 {scores.cc2}
-      </p>
+      </form>
       <footer className="mt-6 border-t border-[#f4e8c6]/10 pt-3 text-center text-[11px] tracking-widest opacity-60">
         FOCES · CEC — TRIPY 2.0
       </footer>
