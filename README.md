@@ -1,29 +1,26 @@
-# Create T3 App
+# Tripy 2.0
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+Live, three-day Python workshop scoreboard for FOCES CEC. Students see questions and team scores. Volunteers verify submissions and add points. Administrators control days, live status, and resets.
 
-## What's next? How do I make an app with this?
+## Local development
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+Copy Convex deployment values into `.env.local`, then run:
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+```bash
+pnpm install
+pnpm dev
+```
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Drizzle](https://orm.drizzle.team)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+Run the full local gate before opening a pull request:
 
-## Learn More
+```bash
+pnpm check
+pnpm test:coverage
+pnpm knip
+```
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+`pnpm test:e2e` needs Playwright Chromium once: `pnpm exec playwright install chromium`.
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+## Safety note
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
-
-## How do I deploy this?
-
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+The current role model uses shared event passwords. Treat them as credentials, rotate them after each event, and do not place defaults in source control. A real identity provider is required before this should manage personally attributable actions or long-lived admin access.

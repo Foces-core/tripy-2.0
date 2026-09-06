@@ -8,7 +8,18 @@
     "dev": "next dev --turbo",
     "preview": "next build && next start",
     "start": "next start",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prepare": "husky",
+    "lint": "eslint . --max-warnings=0",
+    "lint-staged": "lint-staged",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test",
+    "knip": "knip --no-config-hints",
+    "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm test:coverage && pnpm knip && pnpm build"
   },
   "dependencies": {
     "convex": "^1.45.0",
@@ -17,17 +28,30 @@
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "@edge-runtime/vm": "^5.0.0",
+    "@eslint/eslintrc": "^3.3.7",
+    "@playwright/test": "^1.63.0",
     "@tailwindcss/postcss": "^4.0.15",
     "@types/node": "^20.14.10",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "@vitest/coverage-v8": "^3.2.7",
+    "convex-test": "^0.0.56",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^15.5.25",
+    "husky": "^9.1.7",
+    "knip": "^6.34.0",
+    "lint-staged": "^17.5.0",
     "postcss": "^8.5.3",
+    "prettier": "^3.9.6",
+    "prettier-plugin-tailwindcss": "^0.8.1",
     "tailwindcss": "^4.0.15",
-    "typescript": "^5.8.2"
+    "typescript": "^5.8.2",
+    "vitest": "^3.2.4"
   },
   "ct3aMetadata": {
     "initVersion": "7.40.0"
   },
   "packageManager": "pnpm@12.3.4",
-  "pnpm": { "onlyBuiltDependencies": ["esbuild", "unrs-resolver", "sharp", "@img/sharp-libvips-linux-x64"] }
+  "pnpm": {}
 }

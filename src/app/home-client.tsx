@@ -4,6 +4,9 @@ import { useMutation, useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { QUESTIONS } from "~/data/questions";
 
+type Day = 1 | 2 | 3;
+type Lab = "cc1" | "cc2";
+
 export default function Home() {
   const remote = useQuery(api.event.get);
   const seed = useMutation(api.event.seed);
@@ -14,11 +17,12 @@ export default function Home() {
 
   const [role, setRole] = useState<"admin" | "volunteer" | null>(null);
   const [pw, setPw] = useState("");
-  const [day, setDay] = useState(1);
+  const [day, setDay] = useState<Day>(1);
   const [adminTab, setAdminTab] = useState<"controls" | "live">("controls");
   const seeded = useRef(false);
   const [timedOut, setTimedOut] = useState(false);
-  const [pending, setPending] = useState<{ lab: "cc1" | "cc2"; pts: number; q: string } | null>(null);
+  const [pending, setPending] = useState<{ lab: Lab; pts: 5 | 10; q: string } | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   useEffect(() => {
     const t = setTimeout(() => setTimedOut(true), 12000);
@@ -26,111 +30,243 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (remote === null && !seeded.current) { seeded.current = true; seed({}); }
+    if (remote === null && !seeded.current) {
+      seeded.current = true;
+      void seed({}).catch(() => undefined);
+    }
   }, [remote, seed]);
 
   if (!remote)
     return (
       <main className="mx-auto max-w-lg px-4 py-20 text-center">
-        <h1 className="text-4xl font-black">Tripy <span className="text-[#d8a84e]">2.0</span></h1>
-        {!timedOut ? <p className="mt-4 opacity-70">Loading live scores…</p> : (
+        <h1 className="text-4xl font-black">
+          Tripy <span className="text-[#d8a84e]">2.0</span>
+        </h1>
+        {!timedOut ? (
+          <p className="mt-4 opacity-70">Loading live scores…</p>
+        ) : (
           <>
             <p className="mt-4 font-bold">Cannot reach live server.</p>
-            <p className="mx-auto mt-2 max-w-sm text-sm opacity-80">Check internet. If AdGuard or lab firewall blocks it, allow this site and <span className="font-mono text-xs">*.convex.cloud</span>, then reload.</p>
-            <button onClick={() => location.reload()} className="btn-gold mt-4 rounded-lg bg-[#d8a84e] px-5 py-2 font-bold text-[#330e17]">Retry</button>
+            <p className="mx-auto mt-2 max-w-sm text-sm opacity-80">
+              Check internet. If AdGuard or lab firewall blocks it, allow this site and{" "}
+              <span className="font-mono text-xs">*.convex.cloud</span>, then reload.
+            </p>
+            <button
+              onClick={() => location.reload()}
+              className="btn-gold mt-4 rounded-lg bg-[#d8a84e] px-5 py-2 font-bold text-[#330e17]"
+            >
+              Retry
+            </button>
           </>
         )}
       </main>
     );
 
-  const openDays: Record<number, boolean> = {
-    1: (remote.openDays as any).day1,
-    2: (remote.openDays as any).day2,
-    3: (remote.openDays as any).day3,
+  const openDays: Record<Day, boolean> = {
+    1: remote.openDays.day1,
+    2: remote.openDays.day2,
+    3: remote.openDays.day3,
   };
-  const { live, scores } = remote as any;
+  const { live, scores } = remote;
   const isAdmin = role === "admin";
 
   const login = async () => {
     const input = prompt("Password (volunteer or admin):");
     if (!input) return;
-    const { ConvexClient } = await import("convex/browser");
-    const c = new ConvexClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
-    const r: any = await c.query(api.event.checkRole, { pw: input.trim() });
-    if (r === "admin" || r === "volunteer") { setRole(r); setPw(input.trim()); }
-    else alert("Wrong password.");
+    try {
+      const { ConvexClient } = await import("convex/browser");
+      const client = new ConvexClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
+      const result = await client.query(api.event.checkRole, { pw: input.trim() });
+      client.close();
+      if (result === "admin" || result === "volunteer") {
+        setRole(result);
+        setPw(input.trim());
+      } else {
+        alert("Wrong password.");
+      }
+    } catch {
+      setActionError("Could not verify access. Check your connection and try again.");
+    }
   };
 
   const toggleLive = async () => {
     if (!isAdmin) return alert("Admin only.");
-    await setLiveM({ live: !live, pw });
+    try {
+      await setLiveM({ live: !live, pw });
+    } catch (error) {
+      setActionError(error instanceof Error ? error.message : "Could not update event.");
+    }
   };
-  const flipDay = async (d: number) => {
-    await setDayM({ day: d, open: !(openDays as any)[d], pw });
+  const flipDay = async (d: Day) => {
+    try {
+      await setDayM({ day: d, open: !openDays[d], pw });
+    } catch (error) {
+      setActionError(error instanceof Error ? error.message : "Could not update day.");
+    }
   };
   const reset = async () => {
     if (prompt("Type RESET to wipe both scores to 0:") !== "RESET") return;
-    await resetM({ pw });
+    try {
+      await resetM({ pw });
+    } catch (error) {
+      setActionError(error instanceof Error ? error.message : "Could not reset scores.");
+    }
   };
-  const add = (lab: "cc1" | "cc2", pts: number, q: string) => {
+  const add = (lab: Lab, pts: 5 | 10, q: string) => {
     setPending({ lab, pts, q });
   };
   const confirmAdd = async () => {
     if (!pending) return;
-    await addScoreM({ lab: pending.lab, pts: pending.pts, question: pending.q, by: pw.slice(0, 8), day, pw });
-    setPending(null);
+    try {
+      await addScoreM({ lab: pending.lab, pts: pending.pts, question: pending.q, day, pw });
+      setPending(null);
+    } catch (error) {
+      setActionError(error instanceof Error ? error.message : "Could not add score.");
+      setPending(null);
+    }
   };
 
   if (role) {
     return (
       <main className="mx-auto max-w-lg px-4 py-8">
-        <h1 className="text-center text-3xl font-bold text-[#d8a84e]">Tripy 2.0 — {isAdmin ? "Admin" : "Volunteer"}</h1>
+        <h1 className="text-center text-3xl font-bold text-[#d8a84e]">
+          Tripy 2.0 — {isAdmin ? "Admin" : "Volunteer"}
+        </h1>
         <p className="mb-4 text-center text-sm opacity-70">Day {day} · live shared DB</p>
+        {actionError && (
+          <p
+            role="alert"
+            className="mb-3 rounded-lg border border-red-400/60 bg-red-950/50 p-2 text-center text-sm"
+          >
+            {actionError}
+          </p>
+        )}
         <div className="mb-4 flex justify-center gap-2">
           {(["controls", "live"] as const).map((t) => (
-            <button key={t} onClick={() => setAdminTab(t)} className={`rounded-full border border-[#d8a84e] px-4 py-1 text-sm ${adminTab === t ? "bg-[#d8a84e] text-[#330e17]" : "text-[#d8a84e]"}`}>{t === "live" ? "Live Scoreboard" : "Verify + Score"}</button>
+            <button
+              key={t}
+              onClick={() => setAdminTab(t)}
+              className={`rounded-full border border-[#d8a84e] px-4 py-1 text-sm ${adminTab === t ? "bg-[#d8a84e] text-[#330e17]" : "text-[#d8a84e]"}`}
+            >
+              {t === "live" ? "Live Scoreboard" : "Verify + Score"}
+            </button>
           ))}
         </div>
         {adminTab === "live" ? (
-          <div className="py-8 text-center"><p>CC1</p><p className="text-7xl font-bold text-[#d8a84e]">{scores.cc1}</p><p className="mt-4">CC2</p><p className="text-7xl font-bold text-[#d8a84e]">{scores.cc2}</p></div>
+          <div className="py-8 text-center">
+            <p>CC1</p>
+            <p className="text-7xl font-bold text-[#d8a84e]">{scores.cc1}</p>
+            <p className="mt-4">CC2</p>
+            <p className="text-7xl font-bold text-[#d8a84e]">{scores.cc2}</p>
+          </div>
         ) : (
           <>
             <div className="mb-3 flex items-center justify-between rounded-lg bg-[#4a1420] p-3">
               <span className="text-sm">{live ? "running" : "paused"}</span>
-              <button disabled={!isAdmin} onClick={toggleLive} className="rounded bg-[#d8a84e] px-4 py-1 font-bold text-[#330e17] disabled:opacity-40">{live ? "Stop Day (admin)" : "Start Day (admin)"}</button>
+              <button
+                disabled={!isAdmin}
+                onClick={toggleLive}
+                className="rounded bg-[#d8a84e] px-4 py-1 font-bold text-[#330e17] disabled:opacity-40"
+              >
+                {live ? "Stop Day (admin)" : "Start Day (admin)"}
+              </button>
             </div>
-            {!isAdmin && <p className="mb-2 text-center text-xs opacity-60">Verify code, tap CC1/CC2. Only admin starts/stops.</p>}
-            <div className="mb-2 text-center">{[1, 2, 3].map((d) => (
-              <button key={d} onClick={() => setDay(d)} className={`mx-1 rounded-md border px-3 py-1 text-sm ${day === d ? "bg-[#f4e8c6] text-[#330e17]" : ""}`}>Day {d}</button>))}</div>
-            {isAdmin && (
-              <div className="mb-3 flex gap-2">{[1, 2, 3].map((d) => (
-                <button key={d} onClick={() => flipDay(d)} className={`rounded border border-[#d8a84e] px-3 py-1 text-sm ${(openDays as any)[d] ? "bg-[#d8a84e] text-[#330e17]" : "text-[#d8a84e]"}`}>{(openDays as any)[d] ? `Lock Day ${d}` : `Unlock Day ${d}`}</button>))}</div>
+            {!isAdmin && (
+              <p className="mb-2 text-center text-xs opacity-60">
+                Verify code, tap CC1/CC2. Only admin starts/stops.
+              </p>
             )}
-            <div className="mb-3 text-center text-sm opacity-70">CC1: {scores.cc1} · CC2: {scores.cc2} {isAdmin && (<button onClick={reset} className="ml-2 underline opacity-70">reset</button>)}</div>
+            <div className="mb-2 text-center">
+              {([1, 2, 3] as Day[]).map((d) => (
+                <button
+                  key={d}
+                  onClick={() => setDay(d)}
+                  className={`mx-1 rounded-md border px-3 py-1 text-sm ${day === d ? "bg-[#f4e8c6] text-[#330e17]" : ""}`}
+                >
+                  Day {d}
+                </button>
+              ))}
+            </div>
+            {isAdmin && (
+              <div className="mb-3 flex gap-2">
+                {([1, 2, 3] as Day[]).map((d) => (
+                  <button
+                    key={d}
+                    onClick={() => flipDay(d)}
+                    className={`rounded border border-[#d8a84e] px-3 py-1 text-sm ${openDays[d] ? "bg-[#d8a84e] text-[#330e17]" : "text-[#d8a84e]"}`}
+                  >
+                    {openDays[d] ? `Lock Day ${d}` : `Unlock Day ${d}`}
+                  </button>
+                ))}
+              </div>
+            )}
+            <div className="mb-3 text-center text-sm opacity-70">
+              CC1: {scores.cc1} · CC2: {scores.cc2}{" "}
+              {isAdmin && (
+                <button onClick={reset} className="ml-2 underline opacity-70">
+                  reset
+                </button>
+              )}
+            </div>
             {QUESTIONS[day]!.map((q) => (
               <div key={q.label} className="mb-2 rounded-lg bg-[#4a1420] p-3">
-                <p className="text-sm font-bold">{q.label} <span className="font-normal text-[#d8a84e]">({q.pts})</span></p>
+                <p className="text-sm font-bold">
+                  {q.label} <span className="font-normal text-[#d8a84e]">({q.pts})</span>
+                </p>
                 <p className="mt-1 text-xs opacity-80">{q.statement}</p>
                 <p className="text-xs opacity-60">Expected: {q.expected}</p>
-                <pre className="mt-1 overflow-x-auto rounded bg-black/40 p-2 text-xs">{q.solution}</pre>
+                <pre className="mt-1 overflow-x-auto rounded bg-black/40 p-2 text-xs">
+                  {q.solution}
+                </pre>
                 <div className="mt-2 flex gap-2">
                   {(["cc1", "cc2"] as const).map((lab) => (
-                    <button key={lab} onClick={() => add(lab, q.pts, q.label)} className="rounded bg-[#d8a84e] px-4 py-1 text-sm font-bold text-[#330e17]">{lab.toUpperCase()} +{q.pts}</button>))}
+                    <button
+                      key={lab}
+                      onClick={() => add(lab, q.pts, q.label)}
+                      className="rounded bg-[#d8a84e] px-4 py-1 text-sm font-bold text-[#330e17]"
+                    >
+                      {lab.toUpperCase()} +{q.pts}
+                    </button>
+                  ))}
                 </div>
               </div>
             ))}
           </>
         )}
-        <button onClick={() => setRole(null)} className="mx-auto mt-4 block text-sm opacity-60">Exit</button>
+        <button onClick={() => setRole(null)} className="mx-auto mt-4 block text-sm opacity-60">
+          Exit
+        </button>
         {pending && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-6">
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="confirm-score-title"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-6"
+          >
             <div className="card w-full max-w-xs rounded-2xl border border-[#d8a84e]/40 bg-[#4a1420] p-6 text-center">
-              <p className="text-lg font-black">Confirm score?</p>
-              <p className="mt-2 text-sm opacity-90">Add <span className="font-black text-[#d8a84e]">{pending.pts} pts</span> to <span className="font-black">{pending.lab.toUpperCase()}</span></p>
-              <p className="mt-1 text-xs opacity-60">{pending.q} · Day {day}</p>
+              <p id="confirm-score-title" className="text-lg font-black">
+                Confirm score?
+              </p>
+              <p className="mt-2 text-sm opacity-90">
+                Add <span className="font-black text-[#d8a84e]">{pending.pts} pts</span> to{" "}
+                <span className="font-black">{pending.lab.toUpperCase()}</span>
+              </p>
+              <p className="mt-1 text-xs opacity-60">
+                {pending.q} · Day {day}
+              </p>
               <div className="mt-5 flex gap-3">
-                <button onClick={() => setPending(null)} className="flex-1 rounded-lg bg-red-600 px-4 py-2.5 font-black text-white">No</button>
-                <button onClick={confirmAdd} className="flex-1 rounded-lg bg-green-600 px-4 py-2.5 font-black text-white">Yes</button>
+                <button
+                  onClick={() => setPending(null)}
+                  className="flex-1 rounded-lg bg-red-600 px-4 py-2.5 font-black text-white"
+                >
+                  No
+                </button>
+                <button
+                  onClick={confirmAdd}
+                  className="flex-1 rounded-lg bg-green-600 px-4 py-2.5 font-black text-white"
+                >
+                  Yes
+                </button>
               </div>
             </div>
           </div>
@@ -141,10 +277,17 @@ export default function Home() {
 
   return (
     <main className="mx-auto max-w-lg px-4 py-8">
-      <button onClick={login} className="fixed right-4 top-3 rounded-2xl border border-[#d8a84e] px-4 py-1 text-xs text-[#d8a84e] opacity-70">Volunteer</button>
+      <button
+        onClick={login}
+        className="fixed top-3 right-4 rounded-2xl border border-[#d8a84e] px-4 py-1 text-xs text-[#d8a84e] opacity-70"
+      >
+        Volunteer
+      </button>
       <header className="mb-5 text-center">
         <p className="text-[11px] font-bold tracking-[0.35em] text-[#d8a84e]">FOCES · CEC</p>
-        <h1 className="mt-1 text-6xl font-black leading-none tracking-tight">Tripy <span className="text-[#d8a84e]">2.0</span></h1>
+        <h1 className="mt-1 text-6xl leading-none font-black tracking-tight">
+          Tripy <span className="text-[#d8a84e]">2.0</span>
+        </h1>
         <div className="mx-auto mt-3 h-px w-40 bg-[#d8a84e]/60" />
         <p className="mt-3 text-lg">3-Day Python Workshop</p>
         <p className="mt-1 text-sm font-bold tracking-wide text-[#d8a84e]">SEPT 7, 8, 9 · 4–5 PM</p>
@@ -155,14 +298,18 @@ export default function Home() {
         </div>
       </header>
       <section className="card mb-4 overflow-hidden rounded-xl border border-[#d8a84e]/30 bg-[#4a1420]">
-        <p className="pt-3 text-center text-[11px] font-bold tracking-[0.3em] text-[#d8a84e]">LIVE STANDINGS</p>
-        <div className="flex items-stretch justify-around px-4 pb-4 pt-2 text-center">
+        <p className="pt-3 text-center text-[11px] font-bold tracking-[0.3em] text-[#d8a84e]">
+          LIVE STANDINGS
+        </p>
+        <div className="flex items-stretch justify-around px-4 pt-2 pb-4 text-center">
           <div className="flex-1">
             <p className="text-xs font-bold tracking-widest opacity-70">CC1</p>
             <p className="text-5xl font-black text-[#f4e8c6]">{scores.cc1}</p>
           </div>
           <div className="flex flex-col items-center justify-center px-2">
-            <span className="rounded-full bg-[#d8a84e] px-2.5 py-0.5 text-xs font-black text-[#330e17]">VS</span>
+            <span className="rounded-full bg-[#d8a84e] px-2.5 py-0.5 text-xs font-black text-[#330e17]">
+              VS
+            </span>
           </div>
           <div className="flex-1">
             <p className="text-xs font-bold tracking-widest opacity-70">CC2</p>
@@ -178,9 +325,19 @@ export default function Home() {
           <li>Raise your hand. A volunteer verifies and scores CC1 / CC2.</li>
         </ol>
       </section>
-      <div className="mb-4 text-center">{[1, 2, 3].map((d) => (
-        <button key={d} disabled={!(openDays as any)[d]} onClick={() => setDay(d)} className={`mx-1 rounded-md border px-3 py-1 ${day === d ? "bg-[#f4e8c6] text-[#330e17]" : ""} disabled:opacity-30`}>Day {d}</button>))}</div>
-      {!(openDays as any)[day] ? (
+      <div className="mb-4 text-center">
+        {([1, 2, 3] as Day[]).map((d) => (
+          <button
+            key={d}
+            disabled={!openDays[d]}
+            onClick={() => setDay(d)}
+            className={`mx-1 rounded-md border px-3 py-1 ${day === d ? "bg-[#f4e8c6] text-[#330e17]" : ""} disabled:opacity-30`}
+          >
+            Day {d}
+          </button>
+        ))}
+      </div>
+      {!openDays[day] ? (
         <div className="card rounded-xl border border-[#d8a84e]/30 bg-[#4a1420] p-8 text-center">
           <p className="text-3xl">🔒</p>
           <p className="mt-2 font-bold">Day {day} is locked</p>
@@ -192,14 +349,29 @@ export default function Home() {
           <p className="mt-2 font-bold">Paused</p>
           <p className="mt-1 text-sm opacity-70">Wait for the go-ahead from your mentor.</p>
         </div>
-      ) : QUESTIONS[day]!.map((q) => (
-          <div key={q.label} className="card mb-3 rounded-xl border border-[#d8a84e]/40 bg-[#4a1420] p-4">
-            <div className="flex items-center justify-between"><span className="font-bold">{q.label}</span><span className="text-sm text-[#d8a84e]">{q.pts} pts · {q.tier}</span></div>
+      ) : (
+        QUESTIONS[day]!.map((q) => (
+          <div
+            key={q.label}
+            className="card mb-3 rounded-xl border border-[#d8a84e]/40 bg-[#4a1420] p-4"
+          >
+            <div className="flex items-center justify-between">
+              <span className="font-bold">{q.label}</span>
+              <span className="text-sm text-[#d8a84e]">
+                {q.pts} pts · {q.tier}
+              </span>
+            </div>
             <p className="mt-2 text-sm">{q.statement}</p>
             <p className="mt-1 text-xs opacity-60">Hint: {q.hint}</p>
-          </div>))}
-      <p className="mt-4 text-center text-xs opacity-60">CC1 {scores.cc1} · CC2 {scores.cc2}</p>
-      <footer className="mt-6 border-t border-[#f4e8c6]/10 pt-3 text-center text-[11px] tracking-widest opacity-60">FOCES · CEC — TRIPY 2.0</footer>
+          </div>
+        ))
+      )}
+      <p className="mt-4 text-center text-xs opacity-60">
+        CC1 {scores.cc1} · CC2 {scores.cc2}
+      </p>
+      <footer className="mt-6 border-t border-[#f4e8c6]/10 pt-3 text-center text-[11px] tracking-widest opacity-60">
+        FOCES · CEC — TRIPY 2.0
+      </footer>
     </main>
   );
 }

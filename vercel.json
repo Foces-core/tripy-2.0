@@ -1,1 +1,5 @@
-{"installCommand": "npm install --no-audit --no-fund", "buildCommand": "npx next build", "framework": "nextjs"}
+{
+  "installCommand": "pnpm install --frozen-lockfile",
+  "buildCommand": "pnpm check",
+  "framework": "nextjs"
+}

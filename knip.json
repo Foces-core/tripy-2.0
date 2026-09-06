@@ -1,0 +1,5 @@
+{
+  "entry": ["src/app/**/*.tsx", "convex/**/*.ts", "*.config.ts"],
+  "project": ["src/**/*.{ts,tsx}", "convex/**/*.ts", "e2e/**/*.ts"],
+  "ignoreDependencies": ["eslint-config-next", "tailwindcss"]
+}
