@@ -10,4 +10,26 @@
 
 body {
   font-family: Georgia, "Times New Roman", serif;
+  background-color: #330e17;
+  background-image: radial-gradient(rgba(244, 232, 198, 0.055) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+.card {
+  box-shadow: 0 1px 0 rgba(216, 168, 78, 0.25), 0 12px 32px -18px rgba(0, 0, 0, 0.8);
+}
+
+.btn-gold {
+  transition: transform 0.08s ease, filter 0.15s ease;
+}
+.btn-gold:hover {
+  filter: brightness(1.08);
+}
+.btn-gold:active {
+  transform: translateY(1px) scale(0.99);
+}
+
+button:focus-visible, a:focus-visible {
+  outline: 2px solid #d8a84e;
+  outline-offset: 2px;
 }

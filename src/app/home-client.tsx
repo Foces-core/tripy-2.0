@@ -107,24 +107,48 @@ export default function Home() {
     <main className="mx-auto max-w-lg px-4 py-8">
       <button onClick={login} className="fixed right-4 top-3 rounded-2xl border border-[#d8a84e] px-4 py-1 text-xs text-[#d8a84e] opacity-70">Volunteer</button>
       <header className="mb-5 text-center">
-        <p className="text-xs tracking-widest text-[#d8a84e]">FOCES CEC</p>
-        <h1 className="text-5xl font-black">Tripy <span className="text-[#d8a84e]">2.0</span></h1>
-        <p>3-Day Python Workshop</p>
-        <p className="font-bold text-[#d8a84e]">SEPT 7, 8, 9 · 4-5 PM · CC1 and CC2</p>
-        <a href="https://forms.gle/H5dx4uyGZBLAX3ECA" target="_blank" className="mt-2 inline-block rounded-lg bg-[#d8a84e] px-5 py-2 font-bold text-[#330e17]">Register</a>
+        <p className="text-[11px] font-bold tracking-[0.35em] text-[#d8a84e]">FOCES · CEC</p>
+        <h1 className="mt-1 text-6xl font-black leading-none tracking-tight">Tripy <span className="text-[#d8a84e]">2.0</span></h1>
+        <div className="mx-auto mt-3 h-px w-40 bg-[#d8a84e]/60" />
+        <p className="mt-3 text-lg">3-Day Python Workshop</p>
+        <p className="mt-1 text-sm font-bold tracking-wide text-[#d8a84e]">SEPT 7, 8, 9 · 4–5 PM</p>
+        <div className="mt-2 flex items-center justify-center gap-2 text-xs opacity-80">
+          <span className="rounded-full border border-[#f4e8c6]/30 px-3 py-0.5">CC1</span>
+          <span className="text-[#d8a84e]">vs</span>
+          <span className="rounded-full border border-[#f4e8c6]/30 px-3 py-0.5">CC2</span>
+        </div>
+        <a href="https://forms.gle/H5dx4uyGZBLAX3ECA" target="_blank" rel="noreferrer" className="btn-gold mt-4 inline-block rounded-lg bg-[#d8a84e] px-6 py-2.5 font-bold text-[#330e17]">Register</a>
       </header>
-      <section className="mb-4 rounded-lg bg-[#4a1420] p-3 text-sm"><p className="font-bold text-[#d8a84e]">How it works</p><p>Read here. Code on laptop. Raise hand. Volunteer verifies.</p></section>
+      <section className="card mb-4 rounded-xl border border-[#d8a84e]/30 bg-[#4a1420] p-4 text-sm leading-relaxed">
+        <p className="font-bold tracking-wide text-[#d8a84e]">HOW IT RUNS</p>
+        <ol className="mt-1 list-decimal space-y-0.5 pl-5 opacity-90">
+          <li>Read the question here.</li>
+          <li>Write and run code on your laptop.</li>
+          <li>Raise your hand. A volunteer verifies and scores CC1 / CC2.</li>
+        </ol>
+      </section>
       <div className="mb-4 text-center">{[1, 2, 3].map((d) => (
         <button key={d} disabled={!(openDays as any)[d]} onClick={() => setDay(d)} className={`mx-1 rounded-md border px-3 py-1 ${day === d ? "bg-[#f4e8c6] text-[#330e17]" : ""} disabled:opacity-30`}>Day {d}</button>))}</div>
-      {!(openDays as any)[day] ? <p className="py-6 text-center opacity-70">Day locked. Time over or not started.</p>
-      : !live ? <p className="py-6 text-center opacity-70">Paused. Wait for go-ahead.</p>
-      : QUESTIONS[day]!.map((q) => (
-          <div key={q.label} className="mb-3 rounded-lg border border-[#d8a84e]/40 bg-[#4a1420] p-4">
+      {!(openDays as any)[day] ? (
+        <div className="card rounded-xl border border-[#d8a84e]/30 bg-[#4a1420] p-8 text-center">
+          <p className="text-3xl">🔒</p>
+          <p className="mt-2 font-bold">Day {day} is locked</p>
+          <p className="mt-1 text-sm opacity-70">Time over or not started yet. Hang tight.</p>
+        </div>
+      ) : !live ? (
+        <div className="card rounded-xl border border-[#d8a84e]/30 bg-[#4a1420] p-8 text-center">
+          <p className="text-3xl">⏸</p>
+          <p className="mt-2 font-bold">Paused</p>
+          <p className="mt-1 text-sm opacity-70">Wait for the go-ahead from your mentor.</p>
+        </div>
+      ) : QUESTIONS[day]!.map((q) => (
+          <div key={q.label} className="card mb-3 rounded-xl border border-[#d8a84e]/40 bg-[#4a1420] p-4">
             <div className="flex items-center justify-between"><span className="font-bold">{q.label}</span><span className="text-sm text-[#d8a84e]">{q.pts} pts · {q.tier}</span></div>
             <p className="mt-2 text-sm">{q.statement}</p>
             <p className="mt-1 text-xs opacity-60">Hint: {q.hint}</p>
           </div>))}
-      <p className="mt-2 text-center text-xs opacity-60">CC1 {scores.cc1} · CC2 {scores.cc2}</p>
+      <p className="mt-4 text-center text-xs opacity-60">CC1 {scores.cc1} · CC2 {scores.cc2}</p>
+      <footer className="mt-6 border-t border-[#f4e8c6]/10 pt-3 text-center text-[11px] tracking-widest opacity-60">FOCES · CEC — TRIPY 2.0</footer>
     </main>
   );
 }
