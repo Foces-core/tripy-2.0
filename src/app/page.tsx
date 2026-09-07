@@ -5,17 +5,21 @@ import StudentShell from "./student-shell";
 
 export default function Page() {
   return (
-    <main className="mx-auto max-w-lg px-4 py-8">
-      <Link
-        href="/volunteer"
-        prefetch={false}
-        className="fixed top-3 right-4 flex min-h-[44px] items-center rounded-2xl border border-[#d8a84e] px-4 py-2 text-xs text-[#d8a84e] opacity-70"
-      >
-        Volunteer →
-      </Link>
+    <main className="mx-auto max-w-lg px-4 py-6 sm:py-8">
+      <div className="mb-4 flex items-center justify-between">
+        <span className="text-[11px] font-bold tracking-[0.35em] text-[#d8a84e]">FOCES · CEC</span>
+        <Link
+          href="/volunteer"
+          prefetch={false}
+          className="flex items-center gap-1.5 rounded-full border border-[#d8a84e]/50 bg-black/30 px-3.5 py-1 text-xs font-semibold text-[#d8a84e] shadow-sm transition-all hover:border-[#d8a84e] hover:bg-[#d8a84e]/15 active:scale-95"
+        >
+          <span>Volunteer</span>
+          <span>→</span>
+        </Link>
+      </div>
+
       <header className="mb-5 text-center">
-        <p className="text-[11px] font-bold tracking-[0.35em] text-[#d8a84e]">FOCES · CEC</p>
-        <h1 className="mt-1 text-6xl leading-none font-black tracking-tight">
+        <h1 className="mt-1 text-5xl leading-none font-black tracking-tight sm:text-6xl">
           Tripy <span className="text-[#d8a84e]">2.0</span>
         </h1>
         <div className="mx-auto mt-3 h-px w-40 bg-[#d8a84e]/60" />
