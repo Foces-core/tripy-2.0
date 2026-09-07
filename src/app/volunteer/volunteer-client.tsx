@@ -13,6 +13,191 @@ type Day = 1 | 2 | 3;
 type Lab = "cc1" | "cc2";
 type Scores = { cc1: number; cc2: number };
 
+function LiveDashboardScoreboard({
+  scores,
+  size = "normal",
+  isAdmin = false,
+  deductArm = null,
+  onDeduct,
+}: {
+  scores: Scores | null;
+  size?: "normal" | "large";
+  isAdmin?: boolean;
+  deductArm?: string | null;
+  onDeduct?: (lab: Lab, pts: 1 | 2 | 4) => void;
+}) {
+  if (!scores) {
+    return (
+      <section className="card mb-4 overflow-hidden rounded-2xl border border-[#d8a84e]/30 bg-gradient-to-b from-[#4a1420] to-[#2c0a13] p-6 text-center">
+        <div className="flex items-center justify-center gap-2 text-xs font-bold tracking-widest text-[#d8a84e]">
+          <span className="relative flex h-2.5 w-2.5">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#d8a84e] opacity-75"></span>
+            <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-[#d8a84e]"></span>
+          </span>
+          <span className="tracking-[0.25em]">LIVE STANDINGS</span>
+        </div>
+        <p className="mt-3 text-sm opacity-60">Connecting to live scores…</p>
+      </section>
+    );
+  }
+
+  const total = scores.cc1 + scores.cc2;
+  const cc1Pct =
+    total === 0 ? 50 : Math.max(5, Math.min(95, Math.round((scores.cc1 / total) * 100)));
+  const cc2Pct = 100 - cc1Pct;
+  const diff = Math.abs(scores.cc1 - scores.cc2);
+  const leader: "cc1" | "cc2" | "tie" =
+    scores.cc1 > scores.cc2 ? "cc1" : scores.cc2 > scores.cc1 ? "cc2" : "tie";
+
+  return (
+    <section
+      className={`card mb-5 overflow-hidden rounded-2xl border border-[#d8a84e]/40 bg-gradient-to-b from-[#4a1420] via-[#380d18] to-[#240810] shadow-2xl ${
+        size === "large" ? "p-5 sm:p-7" : "p-4"
+      }`}
+    >
+      {/* Top Header Bar */}
+      <div className="flex items-center justify-between border-b border-[#d8a84e]/20 pb-3">
+        <div className="flex items-center gap-2">
+          <span className="relative flex h-2.5 w-2.5">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+            <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
+          </span>
+          <span className="text-[11px] font-black tracking-[0.25em] text-[#d8a84e]">
+            LIVE STANDINGS
+          </span>
+        </div>
+        <div>
+          {leader === "tie" ? (
+            <span className="shimmer-gold rounded-full border border-[#d8a84e]/50 px-3 py-0.5 text-[11px] font-bold text-[#f4e8c6]">
+              ⚡ TIED MATCH
+            </span>
+          ) : (
+            <span className="shimmer-gold rounded-full border border-[#d8a84e]/60 px-3 py-0.5 text-[11px] font-bold text-[#f4e8c6]">
+              👑 {leader.toUpperCase()} +{diff} PTS
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Arenas: CC1 vs CC2 */}
+      <div
+        className={`my-3.5 grid grid-cols-2 items-center gap-3 sm:gap-5 ${
+          size === "large" ? "py-2" : ""
+        }`}
+      >
+        {/* CC1 Card */}
+        <div
+          className={`relative overflow-hidden rounded-xl border p-3 text-center transition-all duration-500 ${
+            leader === "cc1"
+              ? "border-[#d8a84e] bg-gradient-to-b from-[#d8a84e]/20 via-[#4a1420]/80 to-[#20060d] shadow-[0_0_24px_rgba(216,168,78,0.25)]"
+              : "border-[#d8a84e]/25 bg-black/30"
+          }`}
+        >
+          <div className="pointer-events-none absolute -top-8 -left-8 h-20 w-20 rounded-full bg-[#d8a84e]/15 blur-xl" />
+          <div className="flex items-center justify-center gap-1.5">
+            <span className="text-base font-black tracking-widest text-[#f4e8c6] sm:text-lg">
+              CC1
+            </span>
+            {leader === "cc1" && <span className="float-gentle text-sm">👑</span>}
+          </div>
+          <div
+            className={`mt-1 leading-none font-black ${
+              size === "large" ? "text-6xl sm:text-8xl" : "text-5xl sm:text-6xl"
+            }`}
+          >
+            <ScoreNumber
+              value={scores.cc1}
+              className="bg-gradient-to-b from-white via-[#f4e8c6] to-[#d8a84e] bg-clip-text font-black tracking-tight text-transparent"
+            />
+          </div>
+          {isAdmin && onDeduct && (
+            <div className="mt-3 flex justify-center gap-1 sm:gap-1.5">
+              {([1, 2, 4] as const).map((p) => (
+                <button
+                  key={p}
+                  type="button"
+                  onClick={() => onDeduct("cc1", p)}
+                  className={`min-h-[28px] rounded border px-2 py-0.5 text-xs font-bold transition-colors ${
+                    deductArm === `cc1:${p}`
+                      ? "border-red-400 bg-red-600 text-white"
+                      : "border-red-400/40 text-red-300 hover:border-red-400 hover:bg-red-950/40"
+                  }`}
+                >
+                  {deductArm === `cc1:${p}` ? "confirm?" : `−${p}`}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* CC2 Card */}
+        <div
+          className={`relative overflow-hidden rounded-xl border p-3 text-center transition-all duration-500 ${
+            leader === "cc2"
+              ? "border-orange-400 bg-gradient-to-b from-orange-500/20 via-[#4a1420]/80 to-[#20060d] shadow-[0_0_24px_rgba(249,115,22,0.25)]"
+              : "border-[#d8a84e]/25 bg-black/30"
+          }`}
+        >
+          <div className="pointer-events-none absolute -top-8 -right-8 h-20 w-20 rounded-full bg-orange-500/15 blur-xl" />
+          <div className="flex items-center justify-center gap-1.5">
+            <span className="text-base font-black tracking-widest text-[#f4e8c6] sm:text-lg">
+              CC2
+            </span>
+            {leader === "cc2" && <span className="float-gentle text-sm">👑</span>}
+          </div>
+          <div
+            className={`mt-1 leading-none font-black ${
+              size === "large" ? "text-6xl sm:text-8xl" : "text-5xl sm:text-6xl"
+            }`}
+          >
+            <ScoreNumber
+              value={scores.cc2}
+              className="bg-gradient-to-b from-white via-[#fed7aa] to-[#fb923c] bg-clip-text font-black tracking-tight text-transparent"
+            />
+          </div>
+          {isAdmin && onDeduct && (
+            <div className="mt-3 flex justify-center gap-1 sm:gap-1.5">
+              {([1, 2, 4] as const).map((p) => (
+                <button
+                  key={p}
+                  type="button"
+                  onClick={() => onDeduct("cc2", p)}
+                  className={`min-h-[28px] rounded border px-2 py-0.5 text-xs font-bold transition-colors ${
+                    deductArm === `cc2:${p}`
+                      ? "border-red-400 bg-red-600 text-white"
+                      : "border-red-400/40 text-red-300 hover:border-red-400 hover:bg-red-950/40"
+                  }`}
+                >
+                  {deductArm === `cc2:${p}` ? "confirm?" : `−${p}`}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Animated Balance Tug-of-war Bar */}
+      <div className="mt-2.5">
+        <div className="relative flex h-3 w-full overflow-hidden rounded-full border border-[#d8a84e]/30 bg-black/60 p-0.5 shadow-inner">
+          <div
+            style={{ width: `${cc1Pct}%` }}
+            className="h-full rounded-l-full bg-gradient-to-r from-[#d8a84e] to-[#f4e8c6] shadow-[0_0_12px_rgba(216,168,78,0.7)] transition-all duration-700 ease-out"
+          />
+          <div
+            style={{ width: `${cc2Pct}%` }}
+            className="h-full rounded-r-full bg-gradient-to-r from-[#ea580c] to-[#fb923c] shadow-[0_0_12px_rgba(251,146,60,0.7)] transition-all duration-700 ease-out"
+          />
+        </div>
+        <div className="mt-2 flex items-center justify-between text-[11px] font-bold text-[#f4e8c6]/80">
+          <span className="text-[#d8a84e]">{cc1Pct}% (CC1)</span>
+          <span className="text-[10px] tracking-wider opacity-60">{total} PTS SCORED</span>
+          <span className="text-[#fb923c]">{cc2Pct}% (CC2)</span>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function LoggedOutView({
   scores,
   timedOut,
@@ -44,34 +229,7 @@ function LoggedOutView({
         </h1>
       </header>
       <ToastStack toasts={toasts} />
-      <section className="card mb-4 overflow-hidden rounded-xl border border-[#d8a84e]/30 bg-[#4a1420]">
-        <p className="pt-3 text-center text-[11px] font-bold tracking-[0.3em] text-[#d8a84e]">
-          LIVE STANDINGS
-        </p>
-        {scores ? (
-          <div className="flex items-stretch justify-around px-4 pt-2 pb-4 text-center">
-            <div className="flex-1">
-              <p className="text-base font-black tracking-widest opacity-90">CC1</p>
-              <p className="text-5xl font-black text-[#f4e8c6]">
-                <ScoreNumber value={scores.cc1} />
-              </p>
-            </div>
-            <div className="flex flex-col items-center justify-center px-2">
-              <span className="rounded-full bg-[#d8a84e] px-2.5 py-0.5 text-xs font-black text-[#330e17]">
-                VS
-              </span>
-            </div>
-            <div className="flex-1">
-              <p className="text-base font-black tracking-widest opacity-90">CC2</p>
-              <p className="text-5xl font-black text-[#f4e8c6]">
-                <ScoreNumber value={scores.cc2} />
-              </p>
-            </div>
-          </div>
-        ) : (
-          <p className="py-4 text-center text-sm opacity-60">Loading live scores…</p>
-        )}
-      </section>
+      <LiveDashboardScoreboard scores={scores} size="normal" />
       {timedOut && !scores && (
         <div className="card mb-4 rounded-xl border border-[#d8a84e]/30 bg-[#4a1420] p-4 text-center">
           <p className="font-bold">Cannot reach live server.</p>
@@ -311,32 +469,18 @@ export default function Home() {
           ))}
         </div>
         {adminTab === "live" ? (
-          <div className="flex flex-col gap-8 py-8 text-center sm:flex-row sm:items-start sm:justify-around">
-            {(["cc1", "cc2"] as const).map((lab) => (
-              <div key={lab} className="flex-1">
-                <p className="text-2xl font-black tracking-widest text-[#d8a84e]">
-                  {lab.toUpperCase()}
-                </p>
-                <p className="text-7xl font-bold text-[#d8a84e] sm:text-8xl">
-                  <ScoreNumber value={scores[lab]} />
-                </p>
-                {isAdmin && (
-                  <div className="mt-2 flex justify-center gap-2">
-                    {([1, 2, 4] as const).map((p) => (
-                      <button
-                        key={p}
-                        onClick={() => deduct(lab, p)}
-                        className="rounded border border-red-400/60 px-3 py-2 text-sm text-red-300"
-                      >
-                        {deductArm === `${lab}:${p}` ? "tap again" : `−${p}`}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
+          <div className="py-2">
+            <LiveDashboardScoreboard
+              scores={scores}
+              size="large"
+              isAdmin={isAdmin}
+              deductArm={deductArm}
+              onDeduct={deduct}
+            />
             {isAdmin && (
-              <p className="mt-4 text-xs opacity-60">Minus buttons undo volunteer mistakes.</p>
+              <p className="mt-3 text-center text-xs opacity-60">
+                Minus buttons undo volunteer mistakes (tap twice to confirm).
+              </p>
             )}
           </div>
         ) : (

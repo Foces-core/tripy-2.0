@@ -20,22 +20,13 @@ export const viewport: Viewport = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL;
+  const convexUrl =
+    process.env.NEXT_PUBLIC_CONVEX_URL || "https://compassionate-caiman-145.convex.cloud";
   return (
     <html lang="en">
       <head>
-        <link
-          rel="preconnect"
-          href="https://compassionate-caiman-145.convex.cloud"
-          crossOrigin="anonymous"
-        />
-        <link rel="dns-prefetch" href="https://compassionate-caiman-145.convex.cloud" />
-        {convexUrl && (
-          <>
-            <link rel="preconnect" href={convexUrl} crossOrigin="anonymous" />
-            <link rel="dns-prefetch" href={convexUrl} />
-          </>
-        )}
+        <link rel="preconnect" href={convexUrl} crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href={convexUrl} />
       </head>
       <body className="bg-[#330e17] text-[#f4e8c6] antialiased">
         {children}

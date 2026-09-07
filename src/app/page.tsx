@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { DAY1 } from "~/data/day1";
-import QuestionCard from "./question-card";
 import SocialFooter from "./social-footer";
 import StudentShell from "./student-shell";
 
@@ -35,11 +34,7 @@ export default function Page() {
         </ol>
       </section>
 
-      <StudentShell
-        day1={DAY1.map((q) => (
-          <QuestionCard key={q.label} q={q} />
-        ))}
-      />
+      <StudentShell day1Questions={DAY1} />
 
       <SocialFooter />
     </main>
