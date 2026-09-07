@@ -1,5 +1,7 @@
 import "~/styles/globals.css";
 import type { Metadata, Viewport } from "next";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import SwRegister from "./sw-register";
 
 export const metadata: Metadata = {
@@ -31,6 +33,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="bg-[#330e17] text-[#f4e8c6] antialiased">
         {children}
         <SwRegister />
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
