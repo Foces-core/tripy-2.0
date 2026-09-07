@@ -20,6 +20,7 @@ function Inner({ onLocks }: { onLocks: (l: Exclude<Locks, null>) => void }) {
 }
 
 export default function LockSync({ onLocks }: { onLocks: (l: Exclude<Locks, null>) => void }) {
+  if (!process.env.NEXT_PUBLIC_CONVEX_URL) return null;
   return (
     <Providers>
       <Inner onLocks={onLocks} />
