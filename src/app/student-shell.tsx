@@ -161,13 +161,13 @@ export default function StudentShell({ day1Questions }: { day1Questions: Questio
           <p className="mt-1 text-sm opacity-70">Wait for the go-ahead from your mentor.</p>
         </div>
       ) : (
-        <div className="mb-4 flex flex-col items-center gap-2 sm:flex-row sm:justify-between">
-          <div className="flex flex-wrap justify-center gap-1.5 sm:gap-2">
+        <div className="mb-4 flex flex-wrap items-center justify-center gap-2 sm:justify-between">
+          <div className="flex flex-nowrap items-center gap-1 sm:gap-1.5">
             {(["all", "easy", "medium", "hard"] as const).map((t) => (
               <button
                 key={t}
                 onClick={() => setTier(t)}
-                className={`min-h-[38px] rounded-full border border-[#d8a84e] px-3.5 py-1 text-xs font-bold capitalize transition-colors sm:text-sm ${
+                className={`min-h-[36px] rounded-full border border-[#d8a84e] px-3 py-1 text-xs font-bold whitespace-nowrap capitalize transition-colors sm:px-3.5 sm:text-sm ${
                   tier === t ? "bg-[#d8a84e] text-[#330e17]" : "text-[#d8a84e]"
                 }`}
               >
@@ -175,12 +175,12 @@ export default function StudentShell({ day1Questions }: { day1Questions: Questio
               </button>
             ))}
           </div>
-          <div className="flex flex-wrap items-center justify-center gap-2">
+          <div className="flex flex-nowrap items-center gap-1.5 sm:gap-2">
             {doneCount > 0 && (
               <button
                 type="button"
                 onClick={() => setShowDone((prev) => !prev)}
-                className={`flex min-h-[38px] items-center gap-1.5 rounded-lg border px-3 py-1 text-xs font-semibold transition-colors ${
+                className={`flex min-h-[36px] items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-semibold whitespace-nowrap transition-colors sm:px-3 ${
                   showDone
                     ? "border-[#d8a84e] bg-[#d8a84e]/20 text-[#f4e8c6]"
                     : "border-[#d8a84e]/40 bg-black/20 text-[#f4e8c6] hover:border-[#d8a84e]"
@@ -193,17 +193,19 @@ export default function StudentShell({ day1Questions }: { day1Questions: Questio
                 </span>
               </button>
             )}
-            <button
-              type="button"
-              onClick={() => setOrder((prev) => (prev === "asc" ? "desc" : "asc"))}
-              aria-label="Toggle difficulty sort order"
-              className="flex min-h-[38px] items-center gap-1.5 rounded-lg border border-[#d8a84e]/40 bg-black/20 px-3 py-1 text-xs font-semibold text-[#f4e8c6] hover:border-[#d8a84e]"
-            >
-              <span className="opacity-70">Sort:</span>
-              <span className="text-[#d8a84e]">
-                {order === "asc" ? "Easy → Hard ↑" : "Hard → Easy ↓"}
-              </span>
-            </button>
+            {tier === "all" && (
+              <button
+                type="button"
+                onClick={() => setOrder((prev) => (prev === "asc" ? "desc" : "asc"))}
+                aria-label="Toggle difficulty sort order"
+                className="flex min-h-[36px] items-center gap-1 rounded-lg border border-[#d8a84e]/40 bg-black/20 px-2.5 py-1 text-xs font-semibold whitespace-nowrap text-[#f4e8c6] hover:border-[#d8a84e] sm:px-3"
+              >
+                <span className="opacity-70">Sort:</span>
+                <span className="text-[#d8a84e]">
+                  {order === "asc" ? "Easy to Hard" : "Hard to Easy"}
+                </span>
+              </button>
+            )}
           </div>
         </div>
       )}
