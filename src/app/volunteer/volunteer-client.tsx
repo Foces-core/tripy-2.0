@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { useMutation, useQuery } from "convex/react";
+import { useConvex, useMutation, useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { QUESTIONS } from "~/data/questions";
 import { ANSWERS } from "~/data/answers";
@@ -118,6 +118,7 @@ function LoggedOutView({
 }
 
 export default function Home() {
+  const convex = useConvex();
   const remote = useQuery(api.event.get);
   const seed = useMutation(api.event.seed);
   const setLiveM = useMutation(api.event.setLive);
@@ -178,10 +179,7 @@ export default function Home() {
     const input = pwInput.trim();
     if (!input) return;
     try {
-      const { ConvexClient } = await import("convex/browser");
-      const client = new ConvexClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
-      const result = await client.query(api.event.checkRole, { pw: input });
-      client.close();
+      const result = await convex.query(api.event.checkRole, { pw: input });
       if (result === "admin" || result === "volunteer") {
         setRole(result);
         setPw(input);

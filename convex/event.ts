@@ -29,6 +29,25 @@ export const get = query({
   },
 });
 
+const publicLocksValidator = v.object({
+  key: v.literal("event"),
+  live: v.boolean(),
+  openDays: openDaysValidator,
+});
+
+export const getLocks = query({
+  args: {},
+  returns: v.union(publicLocksValidator, v.null()),
+  handler: async (ctx) => {
+    const state = await ctx.db
+      .query("state")
+      .withIndex("by_key", (q) => q.eq("key", "event"))
+      .unique();
+    if (!state) return null;
+    return { key: state.key, live: state.live, openDays: state.openDays };
+  },
+});
+
 export const seed = mutation({
   args: {},
   returns: v.id("state"),

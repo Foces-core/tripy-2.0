@@ -8,7 +8,7 @@ export type Day = 1 | 2 | 3;
 export type Locks = { live: boolean; open: Record<Day, boolean> } | null;
 
 function Inner({ onLocks }: { onLocks: (l: Exclude<Locks, null>) => void }) {
-  const remote = useQuery(api.event.get);
+  const remote = useQuery(api.event.getLocks);
   useEffect(() => {
     if (!remote) return;
     onLocks({

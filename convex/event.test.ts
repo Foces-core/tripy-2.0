@@ -33,6 +33,15 @@ describe("event scoring", () => {
     });
   });
 
+  test("returns only lock and live state without scores for students", async () => {
+    const t = await eventTest();
+    await expect(t.query(api.event.getLocks, {})).resolves.toEqual({
+      key: "event",
+      live: true,
+      openDays: { day1: true, day2: false, day3: false },
+    });
+  });
+
   test("accepts an authorized score only during an open live day", async () => {
     const t = await eventTest();
     await t.mutation(api.event.addScore, {
@@ -67,6 +76,7 @@ describe("event scoring", () => {
   test("returns null before the event exists", async () => {
     const t = convexTest(schema, modules);
     await expect(t.query(api.event.get, {})).resolves.toBeNull();
+    await expect(t.query(api.event.getLocks, {})).resolves.toBeNull();
     await expect(t.query(api.event.checkRole, { pw: "admin-secret" })).resolves.toBeNull();
     await expect(t.mutation(api.event.seed, {})).rejects.toThrow();
   });
