@@ -1,5 +1,6 @@
 import "~/styles/globals.css";
 import type { Metadata, Viewport } from "next";
+import SwRegister from "./sw-register";
 
 export const metadata: Metadata = {
   title: "Tripy 2.0 — 3-Day Python Workshop",
@@ -19,9 +20,27 @@ export const viewport: Viewport = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL;
   return (
     <html lang="en">
-      <body className="bg-[#330e17] text-[#f4e8c6] antialiased">{children}</body>
+      <head>
+        <link
+          rel="preconnect"
+          href="https://compassionate-caiman-145.convex.cloud"
+          crossOrigin="anonymous"
+        />
+        <link rel="dns-prefetch" href="https://compassionate-caiman-145.convex.cloud" />
+        {convexUrl && (
+          <>
+            <link rel="preconnect" href={convexUrl} crossOrigin="anonymous" />
+            <link rel="dns-prefetch" href={convexUrl} />
+          </>
+        )}
+      </head>
+      <body className="bg-[#330e17] text-[#f4e8c6] antialiased">
+        {children}
+        <SwRegister />
+      </body>
     </html>
   );
 }

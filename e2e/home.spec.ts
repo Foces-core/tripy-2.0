@@ -6,6 +6,7 @@ test("student page shows questions with no backend", async ({ page }) => {
   await expect(page.getByRole("heading", { name: /Tripy 2\.0/ })).toBeVisible();
   await expect(page.getByText("HOW IT WORKS", { exact: true })).toBeVisible();
   await expect(page.getByText("Checking which days are open…")).toBeVisible();
+  await expect(page.getByText("E1 — Hello print")).toBeVisible();
 });
 
 test("volunteer page shows standings and login", async ({ page }) => {

@@ -1,0 +1,373 @@
+// Day 1 public statements. No hints or answers in this module.
+import type { Question } from "./question";
+
+export const DAY1: Question[] = [
+  {
+    label: "E1 — Hello print",
+    pts: 1,
+    tier: "easy",
+    statement: "Print Hello, Tripy on the screen.",
+  },
+  {
+    label: "E2 — Two lines",
+    pts: 1,
+    tier: "easy",
+    statement: "Print your name on line 1 and your lab (CC1 or CC2) on line 2.",
+  },
+  {
+    label: "E3 — Name variable",
+    pts: 1,
+    tier: "easy",
+    statement: "Store your name in a variable and print it.",
+  },
+  {
+    label: "E4 — Echo input",
+    pts: 1,
+    tier: "easy",
+    statement: "Take a word as input and print it back.",
+  },
+  {
+    label: "E5 — Add two numbers",
+    pts: 1,
+    tier: "easy",
+    statement: "Take two numbers as input and print their sum.",
+  },
+  {
+    label: "E6 — Subtract",
+    pts: 1,
+    tier: "easy",
+    statement: "Take two numbers and print the first minus the second.",
+  },
+  {
+    label: "E7 — Multiply",
+    pts: 1,
+    tier: "easy",
+    statement: "Take two numbers and print their product.",
+  },
+  {
+    label: "E8 — Divide",
+    pts: 1,
+    tier: "easy",
+    statement: "Take two numbers and print a / b.",
+  },
+  {
+    label: "E9 — Floor division",
+    pts: 1,
+    tier: "easy",
+    statement: "Take two numbers and print how many full times b fits in a.",
+  },
+  {
+    label: "E10 — Remainder",
+    pts: 1,
+    tier: "easy",
+    statement: "Take two numbers and print the remainder of a divided by b.",
+  },
+  {
+    label: "E11 — Power",
+    pts: 1,
+    tier: "easy",
+    statement: "Take a and b and print a raised to b.",
+  },
+  {
+    label: "E12 — Precedence",
+    pts: 1,
+    tier: "easy",
+    statement: "Take a, b, c. Print a + b * c.",
+  },
+  {
+    label: "E13 — Brackets win",
+    pts: 1,
+    tier: "easy",
+    statement: "Take a, b, c. Print (a + b) * c.",
+  },
+  {
+    label: "E14 — Input type",
+    pts: 1,
+    tier: "easy",
+    statement: "Take any input and print its type.",
+  },
+  {
+    label: "E15 — To int",
+    pts: 1,
+    tier: "easy",
+    statement: "Take a decimal number as text and print it as an integer.",
+  },
+  {
+    label: "E16 — To float",
+    pts: 1,
+    tier: "easy",
+    statement: "Take a whole number and print it as a float.",
+  },
+  {
+    label: "E17 — Even or odd",
+    pts: 1,
+    tier: "easy",
+    statement: "Take a number and print even or odd.",
+  },
+  {
+    label: "E18 — Positive check",
+    pts: 1,
+    tier: "easy",
+    statement: "Print positive if the input is above 0, else print negative.",
+  },
+  {
+    label: "E19 — Pass mark",
+    pts: 1,
+    tier: "easy",
+    statement: "Print pass if marks are 40 or more, else fail.",
+  },
+  {
+    label: "E20 — Bigger of two",
+    pts: 1,
+    tier: "easy",
+    statement: "Take two numbers and print the bigger one.",
+  },
+  {
+    label: "M1 — Sign check",
+    pts: 2,
+    tier: "medium",
+    statement: "Print positive, negative, or zero for the input.",
+  },
+  {
+    label: "M2 — Add or sub menu",
+    pts: 2,
+    tier: "medium",
+    statement: "Take a choice (add or sub) plus two numbers, print the result.",
+  },
+  {
+    label: "M3 — Average of 3",
+    pts: 2,
+    tier: "medium",
+    statement: "Take 3 marks and print their average.",
+  },
+  {
+    label: "M4 — Celsius to F",
+    pts: 2,
+    tier: "medium",
+    statement: "Take Celsius and print Fahrenheit. F = C * 9/5 + 32.",
+  },
+  {
+    label: "M5 — Largest of 3",
+    pts: 2,
+    tier: "medium",
+    statement: "Take 3 numbers and print the largest.",
+  },
+  {
+    label: "M6 — Grade bands",
+    pts: 2,
+    tier: "medium",
+    statement: "Marks 90+ print A, 75+ print B, 60+ print C, 40+ print D, else F.",
+  },
+  {
+    label: "M7 — Divisible by 5 and 11",
+    pts: 2,
+    tier: "medium",
+    statement: "Print yes if the number divides by both 5 and 11, else no.",
+  },
+  {
+    label: "M8 — Vowel check",
+    pts: 2,
+    tier: "medium",
+    statement: "Take one letter and print vowel or consonant.",
+  },
+  {
+    label: "M9 — Teen check",
+    pts: 2,
+    tier: "medium",
+    statement: "Print teen if age is 13 to 19 inclusive, else not teen.",
+  },
+  {
+    label: "M10 — FizzBuzz lite",
+    pts: 2,
+    tier: "medium",
+    statement: "Print fizz if divisible by 3, buzz if by 5, fizzbuzz if by both, else the number.",
+  },
+  {
+    label: "M11 — Swap two",
+    pts: 2,
+    tier: "medium",
+    statement: "Take two numbers, swap them, print both on one line.",
+  },
+  {
+    label: "M12 — Minutes to sec",
+    pts: 2,
+    tier: "medium",
+    statement: "Take minutes and seconds, print total seconds.",
+  },
+  {
+    label: "M13 — Discount bill",
+    pts: 2,
+    tier: "medium",
+    statement: "Take price and discount percent, print the final price.",
+  },
+  {
+    label: "M14 — Day name",
+    pts: 2,
+    tier: "medium",
+    statement: "Take 1-7 and print Monday to Sunday. Anything else prints invalid.",
+  },
+  {
+    label: "M15 — Absolute value",
+    pts: 2,
+    tier: "medium",
+    statement: "Print the absolute value without using abs().",
+  },
+  {
+    label: "M16 — Triangle valid",
+    pts: 2,
+    tier: "medium",
+    statement: "Take 3 sides. Print valid if they form a triangle, else invalid.",
+  },
+  {
+    label: "M17 — Simple interest",
+    pts: 2,
+    tier: "medium",
+    statement: "Take principal, rate, years. Print interest = P*R*T/100.",
+  },
+  {
+    label: "M18 — Even and in range",
+    pts: 2,
+    tier: "medium",
+    statement: "Print yes if the number is even and between 10 and 99, else no.",
+  },
+  {
+    label: "M19 — Smallest of 3",
+    pts: 2,
+    tier: "medium",
+    statement: "Take 3 numbers and print the smallest.",
+  },
+  {
+    label: "M20 — Char or digit",
+    pts: 2,
+    tier: "medium",
+    statement: "Take one character. Print digit if 0-9, letter if a-z or A-Z, else other.",
+  },
+  {
+    label: "H1 — Full menu calc",
+    pts: 4,
+    tier: "hard",
+    statement:
+      "Menu: add, sub, mul, div. Take choice + two numbers, print result. Div by zero prints cannot divide by zero.",
+  },
+  {
+    label: "H2 — Leap year",
+    pts: 4,
+    tier: "hard",
+    statement: "Print leap if the year is a leap year, else common.",
+  },
+  {
+    label: "H3 — Triangle type",
+    pts: 4,
+    tier: "hard",
+    statement: "Take 3 sides. Print invalid, equilateral, isosceles, or scalene.",
+  },
+  {
+    label: "H4 — Roots nature",
+    pts: 4,
+    tier: "hard",
+    statement:
+      "Take a, b, c of ax^2+bx+c. Print real-equal, real-distinct, or imaginary from D = b*b-4ac.",
+  },
+  {
+    label: "H5 — Power bill slabs",
+    pts: 4,
+    tier: "hard",
+    statement:
+      "First 100 units cost 3 each, next 100 cost 5 each, rest cost 8 each. Print the bill.",
+  },
+  {
+    label: "H6 — RPS winner",
+    pts: 4,
+    tier: "hard",
+    statement: "Two players enter rock, paper, or scissors. Print player1, player2, or draw.",
+  },
+  {
+    label: "H7 — ATM withdraw",
+    pts: 4,
+    tier: "hard",
+    statement:
+      "Take balance and amount. Print new balance if amount is a multiple of 100 and within balance, else print denied.",
+  },
+  {
+    label: "H8 — Login check",
+    pts: 4,
+    tier: "hard",
+    statement: "Username must be admin and password tripy123. Print welcome or denied.",
+  },
+  {
+    label: "H9 — Seconds to h:m:s",
+    pts: 4,
+    tier: "hard",
+    statement: "Take total seconds, print hours minutes seconds.",
+  },
+  {
+    label: "H10 — Middle of 3",
+    pts: 4,
+    tier: "hard",
+    statement: "Take 3 different numbers and print the middle one.",
+  },
+  {
+    label: "H11 — 3-digit palindrome",
+    pts: 4,
+    tier: "hard",
+    statement: "Take a 3-digit number. Print yes if it reads the same backwards.",
+  },
+  {
+    label: "H12 — Armstrong 3-digit",
+    pts: 4,
+    tier: "hard",
+    statement: "Print armstrong if the number equals the sum of the cubes of its digits.",
+  },
+  {
+    label: "H13 — Gross salary",
+    pts: 4,
+    tier: "hard",
+    statement:
+      "Basic <= 10000: HRA 20%, DA 80%. Else HRA 25%, DA 90%. Print gross = basic + HRA + DA.",
+  },
+  {
+    label: "H14 — Exam pass",
+    pts: 4,
+    tier: "hard",
+    statement: "Take 3 subject marks. Print pass if each is 40+ and average is 50+, else fail.",
+  },
+  {
+    label: "H15 — Sort 3 numbers",
+    pts: 4,
+    tier: "hard",
+    statement: "Take 3 numbers and print them in ascending order without sort().",
+  },
+  {
+    label: "H16 — Speed fine",
+    pts: 4,
+    tier: "hard",
+    statement:
+      "Speed <= 60 prints ok, 61-80 prints fine 500, 81-100 prints fine 1000, above prints seized.",
+  },
+  {
+    label: "H17 — Voter + senior",
+    pts: 4,
+    tier: "hard",
+    statement: "Age < 18 prints minor, 18-59 prints voter, 60+ prints senior voter.",
+  },
+  {
+    label: "H18 — Digit sum vs product",
+    pts: 4,
+    tier: "hard",
+    statement:
+      "Take a 2-digit number. Print sum-first if digit sum > digit product, else product-first.",
+  },
+  {
+    label: "H19 — Extended calc",
+    pts: 4,
+    tier: "hard",
+    statement:
+      "Menu add, sub, mul, div, mod, pow. Guard div/mod by zero. Unknown op prints unknown.",
+  },
+  {
+    label: "H20 — Largest of 4",
+    pts: 4,
+    tier: "hard",
+    statement: "Take 4 numbers and print the largest without max().",
+  },
+];

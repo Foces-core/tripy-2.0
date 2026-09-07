@@ -6,6 +6,8 @@ import { api } from "../../../convex/_generated/api";
 import { QUESTIONS } from "~/data/questions";
 import { ANSWERS } from "~/data/answers";
 import SocialFooter from "../social-footer";
+import ScoreNumber from "../score-number";
+import { ToastStack, type Toast } from "../toasts";
 
 type Day = 1 | 2 | 3;
 type Lab = "cc1" | "cc2";
@@ -14,14 +16,14 @@ type Scores = { cc1: number; cc2: number };
 function LoggedOutView({
   scores,
   timedOut,
-  actionError,
+  toasts,
   pwInput,
   onPwInput,
   onLogin,
 }: {
   scores: Scores | null;
   timedOut: boolean;
-  actionError: string | null;
+  toasts: Toast[];
   pwInput: string;
   onPwInput: (v: string) => void;
   onLogin: (e: React.FormEvent) => void;
@@ -31,7 +33,7 @@ function LoggedOutView({
       <Link
         href="/"
         prefetch={false}
-        className="fixed top-3 left-4 rounded-2xl border border-[#d8a84e] px-4 py-1 text-xs text-[#d8a84e] opacity-70"
+        className="fixed top-3 left-4 flex min-h-[44px] items-center rounded-2xl border border-[#d8a84e] px-4 py-1 text-xs text-[#d8a84e] opacity-70"
       >
         ← Questions
       </Link>
@@ -41,14 +43,7 @@ function LoggedOutView({
           Tripy <span className="text-[#d8a84e]">2.0</span> Volunteer
         </h1>
       </header>
-      {actionError && (
-        <p
-          role="alert"
-          className="mb-3 rounded-lg border border-red-400/60 bg-red-950/50 p-2 text-center text-sm"
-        >
-          {actionError}
-        </p>
-      )}
+      <ToastStack toasts={toasts} />
       <section className="card mb-4 overflow-hidden rounded-xl border border-[#d8a84e]/30 bg-[#4a1420]">
         <p className="pt-3 text-center text-[11px] font-bold tracking-[0.3em] text-[#d8a84e]">
           LIVE STANDINGS
@@ -57,7 +52,9 @@ function LoggedOutView({
           <div className="flex items-stretch justify-around px-4 pt-2 pb-4 text-center">
             <div className="flex-1">
               <p className="text-base font-black tracking-widest opacity-90">CC1</p>
-              <p className="text-5xl font-black text-[#f4e8c6]">{scores.cc1}</p>
+              <p className="text-5xl font-black text-[#f4e8c6]">
+                <ScoreNumber value={scores.cc1} />
+              </p>
             </div>
             <div className="flex flex-col items-center justify-center px-2">
               <span className="rounded-full bg-[#d8a84e] px-2.5 py-0.5 text-xs font-black text-[#330e17]">
@@ -66,7 +63,9 @@ function LoggedOutView({
             </div>
             <div className="flex-1">
               <p className="text-base font-black tracking-widest opacity-90">CC2</p>
-              <p className="text-5xl font-black text-[#f4e8c6]">{scores.cc2}</p>
+              <p className="text-5xl font-black text-[#f4e8c6]">
+                <ScoreNumber value={scores.cc2} />
+              </p>
             </div>
           </div>
         ) : (
@@ -82,7 +81,7 @@ function LoggedOutView({
           </p>
           <button
             onClick={() => location.reload()}
-            className="btn-gold mt-4 rounded-lg bg-[#d8a84e] px-5 py-2 font-bold text-[#330e17]"
+            className="btn-gold mt-4 min-h-[44px] rounded-lg bg-[#d8a84e] px-5 py-2 font-bold text-[#330e17]"
           >
             Retry
           </button>
@@ -107,7 +106,7 @@ function LoggedOutView({
           />
           <button
             type="submit"
-            className="rounded-lg bg-[#d8a84e] px-4 py-2 text-sm font-bold text-[#330e17]"
+            className="min-h-[44px] rounded-lg bg-[#d8a84e] px-4 py-2 text-sm font-bold text-[#330e17]"
           >
             Enter
           </button>
@@ -135,7 +134,20 @@ export default function Home() {
   const seeded = useRef(false);
   const [timedOut, setTimedOut] = useState(false);
   const [pending, setPending] = useState<{ lab: Lab; pts: 1 | 2 | 4; q: string } | null>(null);
-  const [actionError, setActionError] = useState<string | null>(null);
+  const [toasts, setToasts] = useState<Toast[]>([]);
+  const toastId = useRef(0);
+  const pushToast = (msg: string, kind: Toast["kind"] = "ok") => {
+    const id = ++toastId.current;
+    setToasts((t) => [...t, { id, msg, kind }]);
+    setTimeout(
+      () => {
+        setToasts((t) => t.filter((x) => x.id !== id));
+      },
+      kind === "err" ? 6000 : 3500,
+    );
+  };
+  const [search, setSearch] = useState("");
+  const [tier, setTier] = useState<"all" | "easy" | "medium" | "hard">("all");
   const [confirmReset, setConfirmReset] = useState(false);
   const [deductArm, setDeductArm] = useState<string | null>(null);
 
@@ -175,10 +187,10 @@ export default function Home() {
         setPw(input);
         setPwInput("");
       } else {
-        setActionError("Wrong password.");
+        pushToast("Wrong password.", "err");
       }
     } catch {
-      setActionError("Could not verify access. Check your connection and try again.");
+      pushToast("Could not verify access. Check your connection and try again.", "err");
     }
   };
 
@@ -193,7 +205,7 @@ export default function Home() {
       <LoggedOutView
         scores={null}
         timedOut={timedOut}
-        actionError={actionError}
+        toasts={toasts}
         pwInput={pwInput}
         onPwInput={setPwInput}
         onLogin={login}
@@ -213,15 +225,17 @@ export default function Home() {
     if (!isAdmin) return;
     try {
       await setLiveM({ live: !live, pw });
+      pushToast(!live ? "Day running." : "Day paused.");
     } catch (error) {
-      setActionError(error instanceof Error ? error.message : "Could not update event.");
+      pushToast(error instanceof Error ? error.message : "Could not update event.", "err");
     }
   };
   const flipDay = async (d: Day) => {
     try {
       await setDayM({ day: d, open: !openDays[d], pw });
+      pushToast(`Day ${d} ${!openDays[d] ? "open" : "locked"}.`);
     } catch (error) {
-      setActionError(error instanceof Error ? error.message : "Could not update day.");
+      pushToast(error instanceof Error ? error.message : "Could not update day.", "err");
     }
   };
   const reset = async () => {
@@ -232,8 +246,9 @@ export default function Home() {
     setConfirmReset(false);
     try {
       await resetM({ pw });
+      pushToast("Scores wiped to 0.");
     } catch (error) {
-      setActionError(error instanceof Error ? error.message : "Could not reset scores.");
+      pushToast(error instanceof Error ? error.message : "Could not reset scores.", "err");
     }
   };
   const deduct = async (lab: Lab, pts: 1 | 2 | 4) => {
@@ -245,10 +260,17 @@ export default function Home() {
     setDeductArm(null);
     try {
       await deductM({ lab, pts, day, pw });
+      pushToast(`−${pts} ${lab.toUpperCase()} (correction).`);
     } catch (error) {
-      setActionError(error instanceof Error ? error.message : "Could not deduct points.");
+      pushToast(error instanceof Error ? error.message : "Could not deduct points.", "err");
     }
   };
+  const visibleQuestions = (QUESTIONS[day] ?? []).filter(
+    (q) =>
+      (tier === "all" || q.tier === tier) &&
+      (search.trim() === "" ||
+        `${q.label} ${q.statement}`.toLowerCase().includes(search.trim().toLowerCase())),
+  );
   const add = (lab: Lab, pts: 1 | 2 | 4, q: string) => {
     setPending({ lab, pts, q });
   };
@@ -256,9 +278,10 @@ export default function Home() {
     if (!pending) return;
     try {
       await addScoreM({ lab: pending.lab, pts: pending.pts, question: pending.q, day, pw });
+      pushToast(`+${pending.pts} to ${pending.lab.toUpperCase()}.`);
       setPending(null);
     } catch (error) {
-      setActionError(error instanceof Error ? error.message : "Could not add score.");
+      pushToast(error instanceof Error ? error.message : "Could not add score.", "err");
       setPending(null);
     }
   };
@@ -269,7 +292,7 @@ export default function Home() {
         <Link
           href="/"
           prefetch={false}
-          className="fixed top-3 left-4 rounded-2xl border border-[#d8a84e] px-4 py-1 text-xs text-[#d8a84e] opacity-70"
+          className="fixed top-3 left-4 flex min-h-[44px] items-center rounded-2xl border border-[#d8a84e] px-4 py-1 text-xs text-[#d8a84e] opacity-70"
         >
           ← Questions
         </Link>
@@ -277,40 +300,35 @@ export default function Home() {
           Tripy 2.0 — {isAdmin ? "Admin" : "Volunteer"}
         </h1>
         <p className="mb-4 text-center text-sm opacity-70">Day {day} · scores update live</p>
-        {actionError && (
-          <p
-            role="alert"
-            className="mb-3 rounded-lg border border-red-400/60 bg-red-950/50 p-2 text-center text-sm"
-          >
-            {actionError}
-          </p>
-        )}
+        <ToastStack toasts={toasts} />
         <div className="mb-4 flex justify-center gap-2">
           {(["controls", "live"] as const).map((t) => (
             <button
               key={t}
               onClick={() => setAdminTab(t)}
-              className={`rounded-full border border-[#d8a84e] px-4 py-1 text-sm ${adminTab === t ? "bg-[#d8a84e] text-[#330e17]" : "text-[#d8a84e]"}`}
+              className={`min-h-[44px] rounded-full border border-[#d8a84e] px-4 py-1 text-sm ${adminTab === t ? "bg-[#d8a84e] text-[#330e17]" : "text-[#d8a84e]"}`}
             >
               {t === "live" ? "Live Scoreboard" : "Verify + Score"}
             </button>
           ))}
         </div>
         {adminTab === "live" ? (
-          <div className="py-8 text-center">
+          <div className="flex flex-col gap-8 py-8 text-center sm:flex-row sm:items-start sm:justify-around">
             {(["cc1", "cc2"] as const).map((lab) => (
-              <div key={lab} className="mt-4 first:mt-0">
-                <p className="text-xl font-black tracking-widest text-[#d8a84e]">
+              <div key={lab} className="flex-1">
+                <p className="text-2xl font-black tracking-widest text-[#d8a84e]">
                   {lab.toUpperCase()}
                 </p>
-                <p className="text-7xl font-bold text-[#d8a84e]">{scores[lab]}</p>
+                <p className="text-7xl font-bold text-[#d8a84e] sm:text-8xl">
+                  <ScoreNumber value={scores[lab]} />
+                </p>
                 {isAdmin && (
                   <div className="mt-2 flex justify-center gap-2">
                     {([1, 2, 4] as const).map((p) => (
                       <button
                         key={p}
                         onClick={() => deduct(lab, p)}
-                        className="rounded border border-red-400/60 px-3 py-1 text-sm text-red-300"
+                        className="rounded border border-red-400/60 px-3 py-2 text-sm text-red-300"
                       >
                         {deductArm === `${lab}:${p}` ? "tap again" : `−${p}`}
                       </button>
@@ -330,7 +348,7 @@ export default function Home() {
               <button
                 disabled={!isAdmin}
                 onClick={toggleLive}
-                className="rounded bg-[#d8a84e] px-4 py-1 font-bold text-[#330e17] disabled:opacity-40"
+                className="min-h-[44px] rounded bg-[#d8a84e] px-4 py-1 font-bold text-[#330e17] disabled:opacity-40"
               >
                 {live ? "Stop Day (admin)" : "Start Day (admin)"}
               </button>
@@ -345,7 +363,7 @@ export default function Home() {
                 <button
                   key={d}
                   onClick={() => setDay(d)}
-                  className={`mx-1 rounded-md border px-3 py-1 text-sm ${day === d ? "bg-[#f4e8c6] text-[#330e17]" : ""}`}
+                  className={`mx-1 min-h-[44px] min-w-[64px] rounded-md border px-3 py-1 text-sm ${day === d ? "bg-[#f4e8c6] text-[#330e17]" : ""}`}
                 >
                   Day {d}
                 </button>
@@ -357,13 +375,34 @@ export default function Home() {
                   <button
                     key={d}
                     onClick={() => flipDay(d)}
-                    className={`rounded border border-[#d8a84e] px-3 py-1 text-sm ${openDays[d] ? "bg-[#d8a84e] text-[#330e17]" : "text-[#d8a84e]"}`}
+                    className={`min-h-[44px] rounded border border-[#d8a84e] px-3 py-1 text-sm ${openDays[d] ? "bg-[#d8a84e] text-[#330e17]" : "text-[#d8a84e]"}`}
                   >
                     {openDays[d] ? `Lock Day ${d}` : `Unlock Day ${d}`}
                   </button>
                 ))}
               </div>
             )}
+            <div className="mb-3 flex gap-2">
+              <input
+                type="search"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search questions…"
+                aria-label="Search questions"
+                className="min-w-0 flex-1 rounded-lg border border-[#d8a84e]/40 bg-black/40 px-3 py-2 text-sm text-[#f4e8c6] placeholder:opacity-40"
+              />
+            </div>
+            <div className="mb-3 flex justify-center gap-2">
+              {(["all", "easy", "medium", "hard"] as const).map((t) => (
+                <button
+                  key={t}
+                  onClick={() => setTier(t)}
+                  className={`rounded-full border border-[#d8a84e] px-4 py-2 text-sm capitalize ${tier === t ? "bg-[#d8a84e] text-[#330e17]" : "text-[#d8a84e]"}`}
+                >
+                  {t}
+                </button>
+              ))}
+            </div>
             <div className="mb-3 text-center text-sm opacity-70">
               CC1: {scores.cc1} · CC2: {scores.cc2}{" "}
               {isAdmin && (
@@ -372,8 +411,11 @@ export default function Home() {
                 </button>
               )}
             </div>
-            {QUESTIONS[day]!.map((q) => (
-              <div key={q.label} className="mb-2 rounded-lg bg-[#4a1420] p-3">
+            {visibleQuestions.length === 0 && (
+              <p className="py-6 text-center text-sm opacity-60">No questions match this filter.</p>
+            )}
+            {visibleQuestions.map((q) => (
+              <div key={q.label} className="card card-question mb-2 rounded-lg bg-[#4a1420] p-3">
                 <p className="text-base font-bold">
                   {q.label} <span className="font-normal text-[#d8a84e]">({q.pts})</span>
                 </p>
@@ -393,7 +435,7 @@ export default function Home() {
                     <button
                       key={lab}
                       onClick={() => add(lab, q.pts, q.label)}
-                      className="flex-1 rounded-xl bg-[#d8a84e] px-4 py-2.5 text-base font-black text-[#330e17]"
+                      className="min-h-[44px] flex-1 rounded-xl bg-[#d8a84e] px-4 py-2.5 text-base font-black text-[#330e17]"
                     >
                       {lab.toUpperCase()} +{q.pts}
                     </button>
@@ -403,7 +445,10 @@ export default function Home() {
             ))}
           </>
         )}
-        <button onClick={() => setRole(null)} className="mx-auto mt-4 block text-sm opacity-60">
+        <button
+          onClick={() => setRole(null)}
+          className="mx-auto mt-4 block min-h-[44px] px-4 text-sm opacity-60"
+        >
           Exit
         </button>
         {pending && (
@@ -427,13 +472,13 @@ export default function Home() {
               <div className="mt-5 flex gap-3">
                 <button
                   onClick={() => setPending(null)}
-                  className="flex-1 rounded-lg bg-red-600 px-4 py-2.5 font-black text-white"
+                  className="min-h-[44px] flex-1 rounded-lg bg-red-600 px-4 py-2.5 font-black text-white"
                 >
                   No
                 </button>
                 <button
                   onClick={confirmAdd}
-                  className="flex-1 rounded-lg bg-green-600 px-4 py-2.5 font-black text-white"
+                  className="min-h-[44px] flex-1 rounded-lg bg-green-600 px-4 py-2.5 font-black text-white"
                 >
                   Yes
                 </button>
@@ -449,7 +494,7 @@ export default function Home() {
     <LoggedOutView
       scores={scores}
       timedOut={timedOut}
-      actionError={actionError}
+      toasts={toasts}
       pwInput={pwInput}
       onPwInput={setPwInput}
       onLogin={login}
