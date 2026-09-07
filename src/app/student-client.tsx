@@ -1,6 +1,7 @@
 "use client";
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import SocialFooter from "./social-footer";
 
 const Standings = dynamic(() => import("./standings"), {
   ssr: false,
@@ -44,25 +45,7 @@ export default function StudentPage() {
         </ol>
       </section>
       <DayGate />
-      <footer className="mt-6 flex items-center justify-center gap-4 border-t border-[#f4e8c6]/10 pt-3 text-xs tracking-widest">
-        <span className="opacity-60">FOCES · CEC</span>
-        <a
-          href="https://www.linkedin.com/company/foces-cec"
-          target="_blank"
-          rel="noreferrer"
-          className="text-[#d8a84e] underline opacity-80"
-        >
-          LinkedIn
-        </a>
-        <a
-          href="https://www.instagram.com/foces_cec"
-          target="_blank"
-          rel="noreferrer"
-          className="text-[#d8a84e] underline opacity-80"
-        >
-          Instagram
-        </a>
-      </footer>
+      <SocialFooter />
     </main>
   );
 }

@@ -5,6 +5,7 @@ import { useMutation, useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { QUESTIONS } from "~/data/questions";
 import { ANSWERS } from "~/data/answers";
+import SocialFooter from "../social-footer";
 
 type Day = 1 | 2 | 3;
 type Lab = "cc1" | "cc2";
@@ -112,25 +113,7 @@ function LoggedOutView({
           </button>
         </div>
       </form>
-      <footer className="mt-6 flex items-center justify-center gap-4 border-t border-[#f4e8c6]/10 pt-3 text-xs tracking-widest">
-        <span className="opacity-60">FOCES · CEC</span>
-        <a
-          href="https://www.linkedin.com/company/foces-cec"
-          target="_blank"
-          rel="noreferrer"
-          className="text-[#d8a84e] underline opacity-80"
-        >
-          LinkedIn
-        </a>
-        <a
-          href="https://www.instagram.com/foces_cec"
-          target="_blank"
-          rel="noreferrer"
-          className="text-[#d8a84e] underline opacity-80"
-        >
-          Instagram
-        </a>
-      </footer>
+      <SocialFooter />
     </main>
   );
 }
