@@ -118,4 +118,26 @@ describe("event scoring", () => {
       scores: { cc1: 0, cc2: 0 },
     });
   });
+
+  test("deducts scores for administrators only, floored at zero", async () => {
+    const t = await eventTest();
+    await t.mutation(api.event.addScore, {
+      lab: "cc1",
+      pts: 4,
+      question: "Q1",
+      day: 1,
+      pw: "volunteer-secret",
+    });
+    await expect(
+      t.mutation(api.event.deductScore, { lab: "cc1", pts: 1, day: 1, pw: "volunteer-secret" }),
+    ).rejects.toThrow();
+    await t.mutation(api.event.deductScore, { lab: "cc1", pts: 1, day: 1, pw: "admin-secret" });
+    await expect(t.query(api.event.get, {})).resolves.toMatchObject({
+      scores: { cc1: 3, cc2: 0 },
+    });
+    await t.mutation(api.event.deductScore, { lab: "cc1", pts: 4, day: 1, pw: "admin-secret" });
+    await expect(t.query(api.event.get, {})).resolves.toMatchObject({
+      scores: { cc1: 0, cc2: 0 },
+    });
+  });
 });

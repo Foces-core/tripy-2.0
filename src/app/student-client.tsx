@@ -17,11 +17,11 @@ export default function StudentPage() {
   return (
     <main className="mx-auto max-w-lg px-4 py-8">
       <Link
-        href="/live"
+        href="/volunteer"
         prefetch={false}
-        className="fixed top-3 left-4 rounded-2xl border border-[#d8a84e] px-4 py-1 text-xs text-[#d8a84e] opacity-70"
+        className="fixed top-3 right-4 rounded-2xl border border-[#d8a84e] px-4 py-1 text-xs text-[#d8a84e] opacity-70"
       >
-        Live →
+        Volunteer →
       </Link>
       <header className="mb-5 text-center">
         <p className="text-[11px] font-bold tracking-[0.35em] text-[#d8a84e]">FOCES · CEC</p>
@@ -29,10 +29,10 @@ export default function StudentPage() {
           Tripy <span className="text-[#d8a84e]">2.0</span>
         </h1>
         <div className="mx-auto mt-3 h-px w-40 bg-[#d8a84e]/60" />
-        <div className="mt-3 flex items-center justify-center gap-2 text-sm opacity-80">
-          <span className="rounded-full border border-[#f4e8c6]/30 px-3 py-0.5">CC1</span>
+        <div className="mt-3 flex items-center justify-center gap-3 text-base font-bold opacity-90">
+          <span className="rounded-full border border-[#f4e8c6]/30 px-4 py-1">CC1</span>
           <span className="text-[#d8a84e]">vs</span>
-          <span className="rounded-full border border-[#f4e8c6]/30 px-3 py-0.5">CC2</span>
+          <span className="rounded-full border border-[#f4e8c6]/30 px-4 py-1">CC2</span>
         </div>
       </header>
       <Standings />

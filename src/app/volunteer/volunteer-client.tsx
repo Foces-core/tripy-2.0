@@ -38,7 +38,7 @@ function LoggedOutView({
       <header className="mb-5 text-center">
         <p className="text-[11px] font-bold tracking-[0.35em] text-[#d8a84e]">FOCES · CEC</p>
         <h1 className="mt-1 text-4xl leading-none font-black tracking-tight">
-          Tripy <span className="text-[#d8a84e]">2.0</span> Live
+          Tripy <span className="text-[#d8a84e]">2.0</span> Volunteer
         </h1>
       </header>
       {actionError && (
@@ -125,6 +125,7 @@ export default function Home() {
   const setDayM = useMutation(api.event.setDay);
   const addScoreM = useMutation(api.event.addScore);
   const resetM = useMutation(api.event.resetScores);
+  const deductM = useMutation(api.event.deductScore);
 
   const [role, setRole] = useState<"admin" | "volunteer" | null>(null);
   const [pw, setPw] = useState("");
@@ -136,6 +137,7 @@ export default function Home() {
   const [pending, setPending] = useState<{ lab: Lab; pts: 1 | 2 | 4; q: string } | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [confirmReset, setConfirmReset] = useState(false);
+  const [deductArm, setDeductArm] = useState<string | null>(null);
 
   useEffect(() => {
     const t = setTimeout(() => setTimedOut(true), 12000);
@@ -148,6 +150,16 @@ export default function Home() {
       void seed({}).catch(() => undefined);
     }
   }, [remote, seed]);
+
+  useEffect(() => {
+    if (!remote) return;
+    const od: Record<Day, boolean> = {
+      1: remote.openDays.day1,
+      2: remote.openDays.day2,
+      3: remote.openDays.day3,
+    };
+    if (!od[day]) setDay(([1, 2, 3] as Day[]).find((d) => od[d]) ?? 1);
+  }, [remote, day]);
 
   const login = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -224,6 +236,19 @@ export default function Home() {
       setActionError(error instanceof Error ? error.message : "Could not reset scores.");
     }
   };
+  const deduct = async (lab: Lab, pts: 1 | 2 | 4) => {
+    const key = `${lab}:${pts}`;
+    if (deductArm !== key) {
+      setDeductArm(key);
+      return;
+    }
+    setDeductArm(null);
+    try {
+      await deductM({ lab, pts, day, pw });
+    } catch (error) {
+      setActionError(error instanceof Error ? error.message : "Could not deduct points.");
+    }
+  };
   const add = (lab: Lab, pts: 1 | 2 | 4, q: string) => {
     setPending({ lab, pts, q });
   };
@@ -273,10 +298,30 @@ export default function Home() {
         </div>
         {adminTab === "live" ? (
           <div className="py-8 text-center">
-            <p>CC1</p>
-            <p className="text-7xl font-bold text-[#d8a84e]">{scores.cc1}</p>
-            <p className="mt-4">CC2</p>
-            <p className="text-7xl font-bold text-[#d8a84e]">{scores.cc2}</p>
+            {(["cc1", "cc2"] as const).map((lab) => (
+              <div key={lab} className="mt-4 first:mt-0">
+                <p className="text-xl font-black tracking-widest text-[#d8a84e]">
+                  {lab.toUpperCase()}
+                </p>
+                <p className="text-7xl font-bold text-[#d8a84e]">{scores[lab]}</p>
+                {isAdmin && (
+                  <div className="mt-2 flex justify-center gap-2">
+                    {([1, 2, 4] as const).map((p) => (
+                      <button
+                        key={p}
+                        onClick={() => deduct(lab, p)}
+                        className="rounded border border-red-400/60 px-3 py-1 text-sm text-red-300"
+                      >
+                        {deductArm === `${lab}:${p}` ? "tap again" : `−${p}`}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+            {isAdmin && (
+              <p className="mt-4 text-xs opacity-60">Minus buttons undo volunteer mistakes.</p>
+            )}
           </div>
         ) : (
           <>
@@ -329,21 +374,26 @@ export default function Home() {
             </div>
             {QUESTIONS[day]!.map((q) => (
               <div key={q.label} className="mb-2 rounded-lg bg-[#4a1420] p-3">
-                <p className="text-sm font-bold">
+                <p className="text-base font-bold">
                   {q.label} <span className="font-normal text-[#d8a84e]">({q.pts})</span>
                 </p>
-                <p className="mt-1 text-xs opacity-80">{q.statement}</p>
-                <p className="mt-1 text-xs text-[#d8a84e]">Hint: {ANSWERS[day]![q.label]!.hint}</p>
-                <p className="text-xs opacity-60">Expected: {ANSWERS[day]![q.label]!.expected}</p>
-                <pre className="mt-1 overflow-x-auto rounded bg-black/40 p-2 text-xs">
-                  {ANSWERS[day]![q.label]!.solution}
-                </pre>
-                <div className="mt-2 flex gap-2">
+                <p className="mt-1 text-sm opacity-90">{q.statement}</p>
+                <p className="mt-1 text-sm text-[#d8a84e]">
+                  Output: {ANSWERS[day]![q.label]!.expected}
+                </p>
+                <details className="mt-1 text-xs opacity-80">
+                  <summary className="cursor-pointer text-[#d8a84e]">Hint + solution</summary>
+                  <p className="mt-1">Hint: {ANSWERS[day]![q.label]!.hint}</p>
+                  <pre className="mt-1 overflow-x-auto rounded bg-black/40 p-2 text-xs">
+                    {ANSWERS[day]![q.label]!.solution}
+                  </pre>
+                </details>
+                <div className="mt-3 flex gap-3">
                   {(["cc1", "cc2"] as const).map((lab) => (
                     <button
                       key={lab}
                       onClick={() => add(lab, q.pts, q.label)}
-                      className="rounded bg-[#d8a84e] px-4 py-1 text-sm font-bold text-[#330e17]"
+                      className="flex-1 rounded-xl bg-[#d8a84e] px-4 py-2.5 text-base font-black text-[#330e17]"
                     >
                       {lab.toUpperCase()} +{q.pts}
                     </button>

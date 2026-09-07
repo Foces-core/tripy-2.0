@@ -1,4 +1,4 @@
-// Volunteer/admin answer key. Imported only by the /live page,
+// Volunteer/admin answer key. Imported only by the /volunteer page,
 // never by the student page.
 export type Answer = { hint: string; solution: string; expected: string };
 
@@ -22,321 +22,321 @@ export const ANSWERS: Record<number, Record<string, Answer>> = {
     "E4 — Echo input": {
       hint: "Save input() in a variable, then print it.",
       solution: "word = input()\nprint(word)",
-      expected: "in: hello → out: hello",
+      expected: "For input hello, output is hello",
     },
     "E5 — Add two numbers": {
       hint: "input() gives strings. Wrap with int().",
       solution: "a = int(input())\nb = int(input())\nprint(a + b)",
-      expected: "in: 3 4 → out: 7",
+      expected: "For input 3 4, output is 7",
     },
     "E6 — Subtract": {
       hint: "Same shape as addition, with -.",
       solution: "a = int(input())\nb = int(input())\nprint(a - b)",
-      expected: "in: 9 4 → out: 5",
+      expected: "For input 9 4, output is 5",
     },
     "E7 — Multiply": {
       hint: "The multiply operator is *.",
       solution: "a = int(input())\nb = int(input())\nprint(a * b)",
-      expected: "in: 6 7 → out: 42",
+      expected: "For input 6 7, output is 42",
     },
     "E8 — Divide": {
       hint: "Single / always gives a float.",
       solution: "a = float(input())\nb = float(input())\nprint(a / b)",
-      expected: "in: 7 2 → out: 3.5",
+      expected: "For input 7 2, output is 3.5",
     },
     "E9 — Floor division": {
       hint: "Double slash // drops the remainder.",
       solution: "a = int(input())\nb = int(input())\nprint(a // b)",
-      expected: "in: 7 2 → out: 3",
+      expected: "For input 7 2, output is 3",
     },
     "E10 — Remainder": {
       hint: "The remainder operator is %.",
       solution: "a = int(input())\nb = int(input())\nprint(a % b)",
-      expected: "in: 7 2 → out: 1",
+      expected: "For input 7 2, output is 1",
     },
     "E11 — Power": {
       hint: "Power is **, not ^.",
       solution: "a = int(input())\nb = int(input())\nprint(a ** b)",
-      expected: "in: 2 5 → out: 32",
+      expected: "For input 2 5, output is 32",
     },
     "E12 — Precedence": {
       hint: "* runs before +. No brackets needed.",
       solution: "a = int(input())\nb = int(input())\nc = int(input())\nprint(a + b * c)",
-      expected: "in: 2 3 4 → out: 14",
+      expected: "For input 2 3 4, output is 14",
     },
     "E13 — Brackets win": {
       hint: "Brackets run first, before *.",
       solution: "a = int(input())\nb = int(input())\nc = int(input())\nprint((a + b) * c)",
-      expected: "in: 2 3 4 → out: 20",
+      expected: "For input 2 3 4, output is 20",
     },
     "E14 — Input type": {
       hint: "type(x) tells the type. input() is always str.",
       solution: "x = input()\nprint(type(x))",
-      expected: "in: 5 → out: <class 'str'>",
+      expected: "For input 5, output is <class 'str'>",
     },
     "E15 — To int": {
       hint: "int(float(x)) chops the decimal part.",
       solution: "x = input()\nprint(int(float(x)))",
-      expected: "in: 7.9 → out: 7",
+      expected: "For input 7.9, output is 7",
     },
     "E16 — To float": {
       hint: "Wrap with float().",
       solution: "x = input()\nprint(float(x))",
-      expected: "in: 5 → out: 5.0",
+      expected: "For input 5, output is 5.0",
     },
     "E17 — Even or odd": {
       hint: "n % 2 == 0 means even.",
       solution: "n = int(input())\nprint('even' if n % 2 == 0 else 'odd')",
-      expected: "in: 7 → out: odd",
+      expected: "For input 7, output is odd",
     },
     "E18 — Positive check": {
       hint: "if n > 0 ... else ...",
       solution: "n = int(input())\nif n > 0:\n    print('positive')\nelse:\n    print('negative')",
-      expected: "in: -3 → out: negative",
+      expected: "For input -3, output is negative",
     },
     "E19 — Pass mark": {
       hint: "Compare with >= 40.",
       solution: "m = int(input())\nif m >= 40:\n    print('pass')\nelse:\n    print('fail')",
-      expected: "in: 55 → out: pass",
+      expected: "For input 55, output is pass",
     },
     "E20 — Bigger of two": {
       hint: "if a > b print a, else print b.",
       solution: "a = int(input())\nb = int(input())\nif a > b:\n    print(a)\nelse:\n    print(b)",
-      expected: "in: 3 9 → out: 9",
+      expected: "For input 3 9, output is 9",
     },
     "M1 — Sign check": {
       hint: "if / elif / else around 0.",
       solution:
         "n = int(input())\nif n > 0:\n    print('positive')\nelif n < 0:\n    print('negative')\nelse:\n    print('zero')",
-      expected: "in: -3 → out: negative",
+      expected: "For input -3, output is negative",
     },
     "M2 — Add or sub menu": {
       hint: "Branch on the choice string with if / else.",
       solution:
         "op = input().strip()\na = float(input())\nb = float(input())\nif op == 'add':\n    print(a + b)\nelse:\n    print(a - b)",
-      expected: "in: add 3 4 → out: 7.0",
+      expected: "For input add 3 4, output is 7.0",
     },
     "M3 — Average of 3": {
       hint: "Add all three, divide by 3.",
       solution:
         "a = float(input())\nb = float(input())\nc = float(input())\nprint((a + b + c) / 3)",
-      expected: "in: 60 70 80 → out: 70.0",
+      expected: "For input 60 70 80, output is 70.0",
     },
     "M4 — Celsius to F": {
       hint: "Multiply before adding, as the formula reads.",
       solution: "c = float(input())\nprint(c * 9 / 5 + 32)",
-      expected: "in: 100 → out: 212.0",
+      expected: "For input 100, output is 212.0",
     },
     "M5 — Largest of 3": {
       hint: "Compare a against b and c with and.",
       solution:
         "a = int(input())\nb = int(input())\nc = int(input())\nif a >= b and a >= c:\n    print(a)\nelif b >= c:\n    print(b)\nelse:\n    print(c)",
-      expected: "in: 4 9 7 → out: 9",
+      expected: "For input 4 9 7, output is 9",
     },
     "M6 — Grade bands": {
       hint: "Check from the top down with elif.",
       solution:
         "m = int(input())\nif m >= 90:\n    print('A')\nelif m >= 75:\n    print('B')\nelif m >= 60:\n    print('C')\nelif m >= 40:\n    print('D')\nelse:\n    print('F')",
-      expected: "in: 82 → out: B",
+      expected: "For input 82, output is B",
     },
     "M7 — Divisible by 5 and 11": {
       hint: "Two % checks joined with and.",
       solution:
         "n = int(input())\nif n % 5 == 0 and n % 11 == 0:\n    print('yes')\nelse:\n    print('no')",
-      expected: "in: 55 → out: yes",
+      expected: "For input 55, output is yes",
     },
     "M8 — Vowel check": {
       hint: "Check if it is in 'aeiouAEIOU'.",
       solution:
         "ch = input().strip()\nif ch in 'aeiouAEIOU':\n    print('vowel')\nelse:\n    print('consonant')",
-      expected: "in: E → out: vowel",
+      expected: "For input E, output is vowel",
     },
     "M9 — Teen check": {
       hint: "Chain it: 13 <= age <= 19.",
       solution:
         "age = int(input())\nif 13 <= age <= 19:\n    print('teen')\nelse:\n    print('not teen')",
-      expected: "in: 16 → out: teen",
+      expected: "For input 16, output is teen",
     },
     "M10 — FizzBuzz lite": {
       hint: "Check both first, then each one.",
       solution:
         "n = int(input())\nif n % 3 == 0 and n % 5 == 0:\n    print('fizzbuzz')\nelif n % 3 == 0:\n    print('fizz')\nelif n % 5 == 0:\n    print('buzz')\nelse:\n    print(n)",
-      expected: "in: 15 → out: fizzbuzz",
+      expected: "For input 15, output is fizzbuzz",
     },
     "M11 — Swap two": {
       hint: "a, b = b, a swaps in one step.",
       solution: "a = input().strip()\nb = input().strip()\na, b = b, a\nprint(a, b)",
-      expected: "in: 3 9 → out: 9 3",
+      expected: "For input 3 9, output is 9 3",
     },
     "M12 — Minutes to sec": {
       hint: "Minutes times 60 plus seconds.",
       solution: "m = int(input())\ns = int(input())\nprint(m * 60 + s)",
-      expected: "in: 2 30 → out: 150",
+      expected: "For input 2 30, output is 150",
     },
     "M13 — Discount bill": {
       hint: "Final = price - price * pct / 100.",
       solution: "price = float(input())\npct = float(input())\nprint(price - price * pct / 100)",
-      expected: "in: 200 10 → out: 180.0",
+      expected: "For input 200 10, output is 180.0",
     },
     "M14 — Day name": {
       hint: "Seven branches with elif, else at the end.",
       solution:
         "d = int(input())\nif d == 1:\n    print('Monday')\nelif d == 2:\n    print('Tuesday')\nelif d == 3:\n    print('Wednesday')\nelif d == 4:\n    print('Thursday')\nelif d == 5:\n    print('Friday')\nelif d == 6:\n    print('Saturday')\nelif d == 7:\n    print('Sunday')\nelse:\n    print('invalid')",
-      expected: "in: 5 → out: Friday",
+      expected: "For input 5, output is Friday",
     },
     "M15 — Absolute value": {
       hint: "Negatives print as -n, rest print as n.",
       solution: "n = int(input())\nif n < 0:\n    print(-n)\nelse:\n    print(n)",
-      expected: "in: -8 → out: 8",
+      expected: "For input -8, output is 8",
     },
     "M16 — Triangle valid": {
       hint: "Each pair must sum above the third side.",
       solution:
         "a = int(input())\nb = int(input())\nc = int(input())\nif a + b > c and b + c > a and a + c > b:\n    print('valid')\nelse:\n    print('invalid')",
-      expected: "in: 3 4 5 → out: valid",
+      expected: "For input 3 4 5, output is valid",
     },
     "M17 — Simple interest": {
       hint: "Straight formula with three inputs.",
       solution:
         "p = float(input())\nr = float(input())\nt = float(input())\nprint(p * r * t / 100)",
-      expected: "in: 1000 5 2 → out: 100.0",
+      expected: "For input 1000 5 2, output is 100.0",
     },
     "M18 — Even and in range": {
       hint: "Combine % and range checks with and.",
       solution:
         "n = int(input())\nif n % 2 == 0 and 10 <= n <= 99:\n    print('yes')\nelse:\n    print('no')",
-      expected: "in: 42 → out: yes",
+      expected: "For input 42, output is yes",
     },
     "M19 — Smallest of 3": {
       hint: "Mirror the largest-of-3 pattern with <=.",
       solution:
         "a = int(input())\nb = int(input())\nc = int(input())\nif a <= b and a <= c:\n    print(a)\nelif b <= c:\n    print(b)\nelse:\n    print(c)",
-      expected: "in: 4 9 7 → out: 4",
+      expected: "For input 4 9 7, output is 4",
     },
     "M20 — Char or digit": {
       hint: "Compare ranges: '0' <= ch <= '9' and similar for letters.",
       solution:
         "ch = input().strip()\nif '0' <= ch <= '9':\n    print('digit')\nelif 'a' <= ch <= 'z' or 'A' <= ch <= 'Z':\n    print('letter')\nelse:\n    print('other')",
-      expected: "in: 7 → out: digit",
+      expected: "For input 7, output is digit",
     },
     "H1 — Full menu calc": {
       hint: "Branch on choice. Guard b == 0 before dividing.",
       solution:
         "op = input().strip()\na = float(input())\nb = float(input())\nif op == 'add': print(a + b)\nelif op == 'sub': print(a - b)\nelif op == 'mul': print(a * b)\nelif b == 0: print('cannot divide by zero')\nelse: print(a / b)",
-      expected: "in: mul 3 4 → out: 12.0",
+      expected: "For input mul 3 4, output is 12.0",
     },
     "H2 — Leap year": {
       hint: "Divisible by 400, or by 4 but not by 100.",
       solution:
         "y = int(input())\nif y % 400 == 0 or (y % 4 == 0 and y % 100 != 0):\n    print('leap')\nelse:\n    print('common')",
-      expected: "in: 2024 → out: leap",
+      expected: "For input 2024, output is leap",
     },
     "H3 — Triangle type": {
       hint: "Check validity first, then count equal sides.",
       solution:
         "a = int(input())\nb = int(input())\nc = int(input())\nif not (a + b > c and b + c > a and a + c > b):\n    print('invalid')\nelif a == b == c:\n    print('equilateral')\nelif a == b or b == c or a == c:\n    print('isosceles')\nelse:\n    print('scalene')",
-      expected: "in: 3 3 5 → out: isosceles",
+      expected: "For input 3 3 5, output is isosceles",
     },
     "H4 — Roots nature": {
       hint: "Compute D, then compare with 0.",
       solution:
         "a = float(input())\nb = float(input())\nc = float(input())\nd = b * b - 4 * a * c\nif d > 0:\n    print('real-distinct')\nelif d == 0:\n    print('real-equal')\nelse:\n    print('imaginary')",
-      expected: "in: 1 -3 2 → out: real-distinct",
+      expected: "For input 1 -3 2, output is real-distinct",
     },
     "H5 — Power bill slabs": {
       hint: "Peel off each slab from the top down.",
       solution:
         "u = int(input())\nif u <= 100:\n    print(u * 3)\nelif u <= 200:\n    print(100 * 3 + (u - 100) * 5)\nelse:\n    print(100 * 3 + 100 * 5 + (u - 200) * 8)",
-      expected: "in: 250 → out: 1200",
+      expected: "For input 250, output is 1200",
     },
     "H6 — RPS winner": {
       hint: "Draw first, then the three cases where player 1 wins.",
       solution:
         "p1 = input().strip()\np2 = input().strip()\nif p1 == p2:\n    print('draw')\nelif (p1 == 'rock' and p2 == 'scissors') or (p1 == 'scissors' and p2 == 'paper') or (p1 == 'paper' and p2 == 'rock'):\n    print('player1')\nelse:\n    print('player2')",
-      expected: "in: rock scissors → out: player1",
+      expected: "For input rock scissors, output is player1",
     },
     "H7 — ATM withdraw": {
       hint: "Two checks with and: amount % 100 == 0 and amount <= balance.",
       solution:
         "bal = int(input())\namt = int(input())\nif amt % 100 == 0 and amt <= bal:\n    print(bal - amt)\nelse:\n    print('denied')",
-      expected: "in: 1000 300 → out: 700",
+      expected: "For input 1000 300, output is 700",
     },
     "H8 — Login check": {
       hint: "Both must match, joined with and.",
       solution:
         "u = input().strip()\np = input().strip()\nif u == 'admin' and p == 'tripy123':\n    print('welcome')\nelse:\n    print('denied')",
-      expected: "in: admin tripy123 → out: welcome",
+      expected: "For input admin tripy123, output is welcome",
     },
     "H9 — Seconds to h:m:s": {
       hint: "Hours = // 3600, minutes from the leftover // 60, rest is %.",
       solution: "t = int(input())\nh = t // 3600\nm = (t % 3600) // 60\ns = t % 60\nprint(h, m, s)",
-      expected: "in: 3661 → out: 1 1 1",
+      expected: "For input 3661, output is 1 1 1",
     },
     "H10 — Middle of 3": {
       hint: "a is middle if it sits between b and c in either order.",
       solution:
         "a = int(input())\nb = int(input())\nc = int(input())\nif (b < a < c) or (c < a < b):\n    print(a)\nelif (a < b < c) or (c < b < a):\n    print(b)\nelse:\n    print(c)",
-      expected: "in: 4 9 7 → out: 7",
+      expected: "For input 4 9 7, output is 7",
     },
     "H11 — 3-digit palindrome": {
       hint: "First digit is n // 100, last is n % 10.",
       solution:
         "n = int(input())\nif n // 100 == n % 10:\n    print('yes')\nelse:\n    print('no')",
-      expected: "in: 121 → out: yes",
+      expected: "For input 121, output is yes",
     },
     "H12 — Armstrong 3-digit": {
       hint: "Pull digits with // and %, cube each with ** 3.",
       solution:
         "n = int(input())\na = n // 100\nb = (n // 10) % 10\nc = n % 10\nif a ** 3 + b ** 3 + c ** 3 == n:\n    print('armstrong')\nelse:\n    print('not armstrong')",
-      expected: "in: 153 → out: armstrong",
+      expected: "For input 153, output is armstrong",
     },
     "H13 — Gross salary": {
       hint: "Pick the slab first, then one formula.",
       solution:
         "b = float(input())\nif b <= 10000:\n    print(b + b * 0.2 + b * 0.8)\nelse:\n    print(b + b * 0.25 + b * 0.9)",
-      expected: "in: 8000 → out: 16000.0",
+      expected: "For input 8000, output is 16000.0",
     },
     "H14 — Exam pass": {
       hint: "Three >= checks and one average check, all with and.",
       solution:
         "a = float(input())\nb = float(input())\nc = float(input())\nif a >= 40 and b >= 40 and c >= 40 and (a + b + c) / 3 >= 50:\n    print('pass')\nelse:\n    print('fail')",
-      expected: "in: 60 50 40 → out: pass",
+      expected: "For input 60 50 40, output is pass",
     },
     "H15 — Sort 3 numbers": {
       hint: "Find min, max, and middle = total - min - max.",
       solution:
         "a = int(input())\nb = int(input())\nc = int(input())\nlo = a\nif b < lo:\n    lo = b\nif c < lo:\n    lo = c\nhi = a\nif b > hi:\n    hi = b\nif c > hi:\n    hi = c\nprint(lo, a + b + c - lo - hi, hi)",
-      expected: "in: 3 1 2 → out: 1 2 3",
+      expected: "For input 3 1 2, output is 1 2 3",
     },
     "H16 — Speed fine": {
       hint: "Elif chain from the top: check the biggest first or smallest first, just stay ordered.",
       solution:
         "s = int(input())\nif s <= 60:\n    print('ok')\nelif s <= 80:\n    print('fine 500')\nelif s <= 100:\n    print('fine 1000')\nelse:\n    print('seized')",
-      expected: "in: 85 → out: fine 1000",
+      expected: "For input 85, output is fine 1000",
     },
     "H17 — Voter + senior": {
       hint: "Three bands with elif.",
       solution:
         "age = int(input())\nif age < 18:\n    print('minor')\nelif age < 60:\n    print('voter')\nelse:\n    print('senior voter')",
-      expected: "in: 65 → out: senior voter",
+      expected: "For input 65, output is senior voter",
     },
     "H18 — Digit sum vs product": {
       hint: "Tens = n // 10, ones = n % 10.",
       solution:
         "n = int(input())\na = n // 10\nb = n % 10\nif a + b > a * b:\n    print('sum-first')\nelse:\n    print('product-first')",
-      expected: "in: 23 → out: product-first",
+      expected: "For input 23, output is product-first",
     },
     "H19 — Extended calc": {
       hint: "Elif chain on op, zero-guard inside div and mod branches.",
       solution:
         "op = input().strip()\na = float(input())\nb = float(input())\nif op == 'add': print(a + b)\nelif op == 'sub': print(a - b)\nelif op == 'mul': print(a * b)\nelif op == 'mod':\n    print(a % b if b != 0 else 'cannot divide by zero')\nelif op == 'pow': print(a ** b)\nelif b == 0: print('cannot divide by zero')\nelif op == 'div': print(a / b)\nelse: print('unknown')",
-      expected: "in: pow 2 8 → out: 256.0",
+      expected: "For input pow 2 8, output is 256.0",
     },
     "H20 — Largest of 4": {
       hint: "Assume the first is largest, replace it whenever a bigger one comes.",
       solution:
         "a = int(input())\nb = int(input())\nc = int(input())\nd = int(input())\nbig = a\nif b > big:\n    big = b\nif c > big:\n    big = c\nif d > big:\n    big = d\nprint(big)",
-      expected: "in: 4 9 7 2 → out: 9",
+      expected: "For input 4 9 7 2, output is 9",
     },
   },
   2: {

@@ -8,8 +8,8 @@ test("student page shows questions with no backend", async ({ page }) => {
   await expect(page.getByText("Checking which days are open…")).toBeVisible();
 });
 
-test("live page shows standings and login", async ({ page }) => {
-  await page.goto("/live");
+test("volunteer page shows standings and login", async ({ page }) => {
+  await page.goto("/volunteer");
   await expect(page.getByText("LIVE STANDINGS")).toBeVisible();
   await expect(page.getByLabel("Volunteer / Admin login")).toBeVisible();
 });

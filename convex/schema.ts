@@ -22,7 +22,7 @@ export default defineSchema({
   }).index("by_key", ["key"]),
   scores_log: defineTable({
     lab: labValidator,
-    pts: scoreValidator,
+    pts: v.number(),
     question: v.string(),
     by: v.union(v.literal("admin"), v.literal("volunteer")),
     day: dayValidator,

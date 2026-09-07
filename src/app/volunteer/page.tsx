@@ -1,4 +1,4 @@
-import LiveClient from "./live-client";
+import LiveClient from "./volunteer-client";
 import { Providers } from "../providers";
 
 export const dynamic = "force-dynamic";

@@ -122,6 +122,36 @@ export const addScore = mutation({
   },
 });
 
+export const deductScore = mutation({
+  args: {
+    lab: labValidator,
+    pts: scoreValidator,
+    day: dayValidator,
+    pw: v.string(),
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const state = await ctx.db
+      .query("state")
+      .withIndex("by_key", (q) => q.eq("key", "event"))
+      .unique();
+    if (!state || args.pw !== state.adminPw) throw new Error("Admin access required.");
+    const scores = {
+      ...state.scores,
+      [args.lab]: Math.max(0, state.scores[args.lab] - args.pts),
+    };
+    await ctx.db.patch(state._id, { scores });
+    await ctx.db.insert("scores_log", {
+      lab: args.lab,
+      pts: -args.pts,
+      question: "correction",
+      by: "admin",
+      day: args.day,
+    });
+    return null;
+  },
+});
+
 export const resetScores = mutation({
   args: { pw: v.string() },
   returns: v.null(),
