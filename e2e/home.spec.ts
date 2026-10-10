@@ -17,18 +17,20 @@ test("volunteer page shows standings and login", async ({ page }) => {
 
 test("student page allows tier filtering and hiding completed questions", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByRole("button", { name: /Sort:/ })).toBeVisible();
+  // The sort toggle exposes its accessible name via aria-label, not its "Sort:" text.
+  const sortToggle = page.getByRole("button", { name: "Toggle difficulty sort order" });
+  await expect(sortToggle).toBeVisible();
 
   // Filter to Hard
   await page.getByRole("button", { name: "Hard", exact: true }).click();
   await expect(page.getByText("H1 — Full menu calc")).toBeVisible();
   await expect(page.getByText("E1 — Hello print")).not.toBeVisible();
-  await expect(page.getByRole("button", { name: /Sort:/ })).not.toBeVisible();
+  await expect(sortToggle).not.toBeVisible();
 
   // Back to All
   await page.getByRole("button", { name: "All", exact: true }).click();
   await expect(page.getByText("E1 — Hello print")).toBeVisible();
-  await expect(page.getByRole("button", { name: /Sort:/ })).toBeVisible();
+  await expect(sortToggle).toBeVisible();
 
   // Mark first question as done to hide it
   await page.getByRole("button", { name: "✓ Done" }).first().click();
