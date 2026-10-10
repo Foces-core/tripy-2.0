@@ -8,6 +8,16 @@ import {
   scoreValidator,
 } from "./schema";
 
+/** Constant-time string comparison so password checks don't leak timing hints. */
+function safeEquals(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) {
+    diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  }
+  return diff === 0;
+}
+
 const roleValidator = v.union(v.literal("admin"), v.literal("volunteer"), v.null());
 const publicStateValidator = v.object({
   key: v.literal("event"),
@@ -72,8 +82,8 @@ export const checkRole = query({
       .withIndex("by_key", (q) => q.eq("key", "event"))
       .unique();
     if (!state) return null;
-    if (pw === state.adminPw) return "admin";
-    if (pw === state.volunteerPw) return "volunteer";
+    if (safeEquals(pw, state.adminPw)) return "admin";
+    if (safeEquals(pw, state.volunteerPw)) return "volunteer";
     return null;
   },
 });
@@ -86,7 +96,7 @@ export const setLive = mutation({
       .query("state")
       .withIndex("by_key", (q) => q.eq("key", "event"))
       .unique();
-    if (!state || pw !== state.adminPw) throw new Error("Admin access required.");
+    if (!state || !safeEquals(pw, state.adminPw)) throw new Error("Admin access required.");
     await ctx.db.patch(state._id, { live });
     return null;
   },
@@ -100,7 +110,7 @@ export const setDay = mutation({
       .query("state")
       .withIndex("by_key", (q) => q.eq("key", "event"))
       .unique();
-    if (!state || pw !== state.adminPw) throw new Error("Admin access required.");
+    if (!state || !safeEquals(pw, state.adminPw)) throw new Error("Admin access required.");
     const dayKey = `day${day}` as "day1" | "day2" | "day3";
     await ctx.db.patch(state._id, { openDays: { ...state.openDays, [dayKey]: open } });
     return null;
@@ -122,8 +132,11 @@ export const addScore = mutation({
       .withIndex("by_key", (q) => q.eq("key", "event"))
       .unique();
     if (!state) throw new Error("Event is not configured.");
-    const by =
-      args.pw === state.adminPw ? "admin" : args.pw === state.volunteerPw ? "volunteer" : null;
+    const by = safeEquals(args.pw, state.adminPw)
+      ? "admin"
+      : safeEquals(args.pw, state.volunteerPw)
+        ? "volunteer"
+        : null;
     if (!by) throw new Error("Volunteer or admin access required.");
     const dayKey = `day${args.day}` as "day1" | "day2" | "day3";
     if (!state.live || !state.openDays[dayKey])
@@ -154,7 +167,7 @@ export const deductScore = mutation({
       .query("state")
       .withIndex("by_key", (q) => q.eq("key", "event"))
       .unique();
-    if (!state || args.pw !== state.adminPw) throw new Error("Admin access required.");
+    if (!state || !safeEquals(args.pw, state.adminPw)) throw new Error("Admin access required.");
     const scores = {
       ...state.scores,
       [args.lab]: Math.max(0, state.scores[args.lab] - args.pts),
@@ -179,7 +192,7 @@ export const resetScores = mutation({
       .query("state")
       .withIndex("by_key", (q) => q.eq("key", "event"))
       .unique();
-    if (!state || pw !== state.adminPw) throw new Error("Admin access required.");
+    if (!state || !safeEquals(pw, state.adminPw)) throw new Error("Admin access required.");
     await ctx.db.patch(state._id, { scores: { cc1: 0, cc2: 0 } });
     return null;
   },
